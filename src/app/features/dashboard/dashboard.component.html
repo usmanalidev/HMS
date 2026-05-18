@@ -1,0 +1,139 @@
+<app-page-header
+
+  title="Dashboard"
+
+  [subtitle]="'Welcome back, ' + authState.displayName()"
+
+/>
+
+
+
+<app-learning-banner [topics]="learningTopics" />
+
+
+
+@if (loading()) {
+
+  <app-loading-skeleton [rows]="4" [columns]="3" />
+
+} @else {
+
+  <div class="stat-grid">
+
+    <mat-card class="stat-card">
+
+      <mat-icon color="primary">personal_injury</mat-icon>
+
+      <div class="stat-body">
+
+        <span class="stat-value">{{ stats()?.patientCount ?? 0 }}</span>
+
+        <span class="stat-label">Patients</span>
+
+      </div>
+
+    </mat-card>
+
+    <mat-card class="stat-card">
+
+      <mat-icon color="primary">event</mat-icon>
+
+      <div class="stat-body">
+
+        <span class="stat-value">{{ stats()?.appointmentCount ?? 0 }}</span>
+
+        <span class="stat-label">Appointments</span>
+
+      </div>
+
+    </mat-card>
+
+    <mat-card class="stat-card warn">
+
+      <mat-icon color="warn">emergency</mat-icon>
+
+      <div class="stat-body">
+
+        <span class="stat-value">{{ stats()?.criticalPatients ?? 0 }}</span>
+
+        <span class="stat-label">Critical patients</span>
+
+      </div>
+
+    </mat-card>
+
+    <mat-card class="stat-card">
+
+      <mat-icon color="primary">today</mat-icon>
+
+      <div class="stat-body">
+
+        <span class="stat-value">{{ stats()?.todayAppointments ?? 0 }}</span>
+
+        <span class="stat-label">Today&apos;s visits</span>
+
+      </div>
+
+    </mat-card>
+
+  </div>
+
+
+
+  <div class="dashboard-panels">
+
+    <mat-card class="chart-placeholder">
+
+      <h3>Admissions trend</h3>
+
+      <p class="placeholder-note">Chart placeholder — integrate Chart.js or ng2-charts here.</p>
+
+      <div class="chart-mock" aria-hidden="true"></div>
+
+    </mat-card>
+
+    <mat-card class="chart-placeholder">
+
+      <h3>Department occupancy</h3>
+
+      <p class="placeholder-note">Chart placeholder — bind to /reports or analytics API.</p>
+
+      <div class="chart-mock bars" aria-hidden="true"></div>
+
+    </mat-card>
+
+  </div>
+
+
+
+  <mat-card class="activity-card">
+
+    <h3>Recent activity</h3>
+
+    <mat-nav-list>
+
+      @for (item of activity(); track item.id) {
+
+        <a mat-list-item>
+
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+
+          <span matListItemTitle>{{ item.label }}</span>
+
+          <span matListItemLine>{{ item.timestamp | timeAgo }}</span>
+
+        </a>
+
+      } @empty {
+
+        <p class="empty-note">No recent appointments.</p>
+
+      }
+
+    </mat-nav-list>
+
+  </mat-card>
+
+}
+
+

@@ -1,0 +1,13 @@
+<router-outlet />
+
+@if (notifications.notifications().length > 0) {
+  <div class="toast-stack" aria-live="polite">
+    @for (toast of notifications.notifications(); track toast.id) {
+      <div class="toast toast--{{ toast.type }}" role="alert">
+        <strong>{{ toast.title }}</strong>
+        <p>{{ toast.message }}</p>
+        <button type="button" (click)="notifications.dismiss(toast.id)">Dismiss</button>
+      </div>
+    }
+  </div>
+}

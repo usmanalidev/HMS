@@ -1,0 +1,10 @@
+@if (topics.length > 0) {
+  <aside class="learning-banner" aria-label="Learning objectives for this screen">
+    <h2 class="learning-banner__heading">{{ heading }}</h2>
+    <ul class="learning-banner__list">
+      @for (topic of topics; track topic) {
+        <li>{{ topic }}</li>
+      }
+    </ul>
+  </aside>
+}

@@ -1,0 +1,85 @@
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-placeholder {
+  padding: 1rem 1.25rem;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+  }
+}
+
+.placeholder-note {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.chart-mock {
+  height: 8rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mat-sys-primary) 35%, transparent) 0%,
+    transparent 100%
+  );
+
+  &.bars {
+    background: repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--mat-sys-primary) 40%, transparent) 0 12%,
+      transparent 12% 20%
+    );
+  }
+}
+
+.activity-card {
+  padding: 0 0 0.5rem;
+
+  h3 {
+    margin: 0;
+    padding: 1rem 1.25rem 0;
+    font-size: 1rem;
+  }
+}
+
+.empty-note {
+  padding: 1rem 1.25rem;
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}

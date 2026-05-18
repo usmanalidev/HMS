@@ -1,0 +1,46 @@
+{
+  "name": "healthcare-management-system",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "mock:api": "node mock-api/server.js",
+    "start:dev": "concurrently -n API,APP -c blue,green \"npm run mock:api\" \"ng serve\"",
+    "lint": "eslint \"src/**/*.{ts,html}\"",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,json,md}\""
+  },
+  "private": true,
+  "packageManager": "npm@11.12.1",
+  "dependencies": {
+    "@angular/animations": "^21.2.0",
+    "@angular/cdk": "^21.2.0",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/material": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "concurrently": "^9.2.1",
+    "json-server": "^1.0.0-beta.15",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.11",
+    "@angular/cli": "^21.2.11",
+    "@angular/compiler-cli": "^21.2.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.8.0",
+    "angular-eslint": "^21.4.0",
+    "eslint": "^10.4.0",
+    "jsdom": "^28.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.59.3",
+    "vitest": "^4.0.8"
+  }
+}

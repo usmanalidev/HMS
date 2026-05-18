@@ -1,0 +1,350 @@
+{
+  "users": [
+    {
+      "id": "u-admin-001",
+      "email": "admin@metrohealth.org",
+      "passwordHash": "$2b$10$demo$admin123",
+      "firstName": "Patricia",
+      "lastName": "Morgan",
+      "role": "admin",
+      "department": "Administration",
+      "avatarUrl": null,
+      "isActive": true,
+      "createdAt": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": "u-doctor-001",
+      "email": "doctor@metrohealth.org",
+      "passwordHash": "$2b$10$demo$doctor123",
+      "firstName": "James",
+      "lastName": "Chen",
+      "role": "doctor",
+      "department": "Cardiology",
+      "avatarUrl": null,
+      "isActive": true,
+      "createdAt": "2024-02-01T08:00:00.000Z"
+    },
+    {
+      "id": "u-nurse-001",
+      "email": "nurse@metrohealth.org",
+      "passwordHash": "$2b$10$demo$nurse123",
+      "firstName": "Maria",
+      "lastName": "Santos",
+      "role": "nurse",
+      "department": "ER",
+      "avatarUrl": null,
+      "isActive": true,
+      "createdAt": "2024-02-10T08:00:00.000Z"
+    },
+    {
+      "id": "u-receptionist-001",
+      "email": "receptionist@metrohealth.org",
+      "passwordHash": "$2b$10$demo$receptionist123",
+      "firstName": "David",
+      "lastName": "Brooks",
+      "role": "receptionist",
+      "department": "Pediatrics",
+      "avatarUrl": null,
+      "isActive": true,
+      "createdAt": "2024-03-01T08:00:00.000Z"
+    }
+  ],
+  "patients": [
+    {
+      "id": "p-001",
+      "mrn": "MRN-10001",
+      "firstName": "Eleanor",
+      "lastName": "Whitfield",
+      "dateOfBirth": "1958-04-12",
+      "gender": "female",
+      "department": "Cardiology",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "admitted",
+      "phone": "+1-555-0101",
+      "lastVisit": "2026-05-10T14:30:00.000Z"
+    },
+    {
+      "id": "p-002",
+      "mrn": "MRN-10002",
+      "firstName": "Marcus",
+      "lastName": "Reynolds",
+      "dateOfBirth": "1972-09-03",
+      "gender": "male",
+      "department": "ER",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "critical",
+      "phone": "+1-555-0102",
+      "lastVisit": "2026-05-17T22:15:00.000Z"
+    },
+    {
+      "id": "p-003",
+      "mrn": "MRN-10003",
+      "firstName": "Sofia",
+      "lastName": "Alvarez",
+      "dateOfBirth": "2019-11-20",
+      "gender": "female",
+      "department": "Pediatrics",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "outpatient",
+      "phone": "+1-555-0103",
+      "lastVisit": "2026-05-08T10:00:00.000Z"
+    },
+    {
+      "id": "p-004",
+      "mrn": "MRN-10004",
+      "firstName": "Harold",
+      "lastName": "Nguyen",
+      "dateOfBirth": "1945-01-28",
+      "gender": "male",
+      "department": "Cardiology",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "admitted",
+      "phone": "+1-555-0104",
+      "lastVisit": "2026-05-16T09:45:00.000Z"
+    },
+    {
+      "id": "p-005",
+      "mrn": "MRN-10005",
+      "firstName": "Aisha",
+      "lastName": "Patel",
+      "dateOfBirth": "1988-07-14",
+      "gender": "female",
+      "department": "ER",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "discharged",
+      "phone": "+1-555-0105",
+      "lastVisit": "2026-05-14T18:20:00.000Z"
+    },
+    {
+      "id": "p-006",
+      "mrn": "MRN-10006",
+      "firstName": "Liam",
+      "lastName": "O'Connor",
+      "dateOfBirth": "2015-03-05",
+      "gender": "male",
+      "department": "Pediatrics",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "outpatient",
+      "phone": "+1-555-0106",
+      "lastVisit": "2026-05-12T11:30:00.000Z"
+    },
+    {
+      "id": "p-007",
+      "mrn": "MRN-10007",
+      "firstName": "Grace",
+      "lastName": "Kim",
+      "dateOfBirth": "1963-12-01",
+      "gender": "female",
+      "department": "Cardiology",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "scheduled",
+      "phone": "+1-555-0107",
+      "lastVisit": "2026-04-28T15:00:00.000Z"
+    },
+    {
+      "id": "p-008",
+      "mrn": "MRN-10008",
+      "firstName": "Noah",
+      "lastName": "Fischer",
+      "dateOfBirth": "1995-06-22",
+      "gender": "male",
+      "department": "ER",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "admitted",
+      "phone": "+1-555-0108",
+      "lastVisit": "2026-05-17T07:00:00.000Z"
+    },
+    {
+      "id": "p-009",
+      "mrn": "MRN-10009",
+      "firstName": "Isabella",
+      "lastName": "Romero",
+      "dateOfBirth": "2012-08-17",
+      "gender": "female",
+      "department": "Pediatrics",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "outpatient",
+      "phone": "+1-555-0109",
+      "lastVisit": "2026-05-15T13:15:00.000Z"
+    },
+    {
+      "id": "p-010",
+      "mrn": "MRN-10010",
+      "firstName": "Walter",
+      "lastName": "Hughes",
+      "dateOfBirth": "1950-10-30",
+      "gender": "male",
+      "department": "Cardiology",
+      "primaryPhysicianId": "u-doctor-001",
+      "status": "admitted",
+      "phone": "+1-555-0110",
+      "lastVisit": "2026-05-17T16:40:00.000Z"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-001",
+      "patientId": "p-007",
+      "providerId": "u-doctor-001",
+      "department": "Cardiology",
+      "scheduledAt": "2026-05-19T09:00:00.000Z",
+      "durationMinutes": 30,
+      "type": "follow-up",
+      "status": "confirmed",
+      "notes": "Post-angioplasty review"
+    },
+    {
+      "id": "apt-002",
+      "patientId": "p-003",
+      "providerId": "u-doctor-001",
+      "department": "Pediatrics",
+      "scheduledAt": "2026-05-19T10:30:00.000Z",
+      "durationMinutes": 20,
+      "type": "wellness",
+      "status": "confirmed",
+      "notes": "Annual checkup"
+    },
+    {
+      "id": "apt-003",
+      "patientId": "p-002",
+      "providerId": "u-doctor-001",
+      "department": "ER",
+      "scheduledAt": "2026-05-18T08:00:00.000Z",
+      "durationMinutes": 45,
+      "type": "urgent",
+      "status": "in-progress",
+      "notes": "Chest trauma assessment"
+    },
+    {
+      "id": "apt-004",
+      "patientId": "p-001",
+      "providerId": "u-doctor-001",
+      "department": "Cardiology",
+      "scheduledAt": "2026-05-20T11:00:00.000Z",
+      "durationMinutes": 40,
+      "type": "consultation",
+      "status": "scheduled",
+      "notes": "Arrhythmia monitoring"
+    },
+    {
+      "id": "apt-005",
+      "patientId": "p-006",
+      "providerId": "u-doctor-001",
+      "department": "Pediatrics",
+      "scheduledAt": "2026-05-21T14:00:00.000Z",
+      "durationMinutes": 25,
+      "type": "vaccination",
+      "status": "scheduled",
+      "notes": "MMR booster"
+    },
+    {
+      "id": "apt-006",
+      "patientId": "p-005",
+      "providerId": "u-doctor-001",
+      "department": "ER",
+      "scheduledAt": "2026-05-16T16:00:00.000Z",
+      "durationMinutes": 30,
+      "type": "follow-up",
+      "status": "completed",
+      "notes": "Discharge follow-up call"
+    },
+    {
+      "id": "apt-007",
+      "patientId": "p-010",
+      "providerId": "u-doctor-001",
+      "department": "Cardiology",
+      "scheduledAt": "2026-05-18T15:30:00.000Z",
+      "durationMinutes": 35,
+      "type": "procedure-prep",
+      "status": "confirmed",
+      "notes": "CABG pre-op evaluation"
+    },
+    {
+      "id": "apt-008",
+      "patientId": "p-009",
+      "providerId": "u-doctor-001",
+      "department": "Pediatrics",
+      "scheduledAt": "2026-05-22T09:15:00.000Z",
+      "durationMinutes": 20,
+      "type": "consultation",
+      "status": "scheduled",
+      "notes": "Allergy review"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-001",
+      "userId": "u-doctor-001",
+      "title": "Critical lab result",
+      "message": "Marcus Reynolds (ER) — troponin elevated. Review immediately.",
+      "type": "alert",
+      "read": false,
+      "createdAt": "2026-05-17T22:20:00.000Z"
+    },
+    {
+      "id": "notif-002",
+      "userId": "u-nurse-001",
+      "title": "Bed assignment updated",
+      "message": "Harold Nguyen moved to Cardiology Step-Down Unit 4B.",
+      "type": "info",
+      "read": false,
+      "createdAt": "2026-05-17T10:05:00.000Z"
+    },
+    {
+      "id": "notif-003",
+      "userId": "u-receptionist-001",
+      "title": "Appointment reminder sent",
+      "message": "SMS reminder dispatched for Sofia Alvarez — Pediatrics, May 19.",
+      "type": "info",
+      "read": true,
+      "createdAt": "2026-05-17T08:30:00.000Z"
+    },
+    {
+      "id": "notif-004",
+      "userId": "u-admin-001",
+      "title": "Monthly compliance report ready",
+      "message": "Q1 patient-safety metrics are available in Reports.",
+      "type": "info",
+      "read": false,
+      "createdAt": "2026-05-16T17:00:00.000Z"
+    },
+    {
+      "id": "notif-005",
+      "userId": "u-doctor-001",
+      "title": "Schedule change",
+      "message": "Walter Hughes procedure prep moved to 3:30 PM today.",
+      "type": "warning",
+      "read": true,
+      "createdAt": "2026-05-18T07:15:00.000Z"
+    }
+  ],
+  "reports": [
+    {
+      "id": "rpt-001",
+      "title": "Cardiology Census — May 2026",
+      "department": "Cardiology",
+      "generatedBy": "u-admin-001",
+      "generatedAt": "2026-05-15T12:00:00.000Z",
+      "format": "pdf",
+      "summary": "42 admitted patients, 18 procedures, 96% bed utilization."
+    },
+    {
+      "id": "rpt-002",
+      "title": "ER Throughput Analysis",
+      "department": "ER",
+      "generatedBy": "u-admin-001",
+      "generatedAt": "2026-05-14T09:30:00.000Z",
+      "format": "xlsx",
+      "summary": "Average door-to-provider time: 14 minutes (target: 15)."
+    },
+    {
+      "id": "rpt-003",
+      "title": "Pediatrics Immunization Compliance",
+      "department": "Pediatrics",
+      "generatedBy": "u-doctor-001",
+      "generatedAt": "2026-05-10T16:45:00.000Z",
+      "format": "pdf",
+      "summary": "94% of eligible patients current on scheduled vaccines."
+    }
+  ]
+}

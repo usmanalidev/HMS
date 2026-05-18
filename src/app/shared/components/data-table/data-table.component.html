@@ -1,0 +1,65 @@
+<!--
+  LEARNING: mat-table binds displayedColumns to column defs below.
+  matSort + mat-sort-header wire header clicks to MatTableDataSource when clientSide is true.
+-->
+<div class="data-table">
+  @if (searchable) {
+    <mat-form-field class="data-table__search" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ searchPlaceholder }}</mat-label>
+      <input
+        matInput
+        type="search"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchInput($event)"
+        autocomplete="off"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  }
+
+  <div class="data-table__wrapper">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+      (matSortChange)="onSort($event)"
+      class="data-table__table"
+    >
+      @for (column of columns; track column.key) {
+        <ng-container [matColumnDef]="column.key">
+          @if (column.sortable) {
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="{{ column.key }}">
+              {{ column.label }}
+            </th>
+          } @else {
+            <th mat-header-cell *matHeaderCellDef>
+              {{ column.label }}
+            </th>
+          }
+          <td mat-cell *matCellDef="let row">
+            {{ resolveCell(row, column) }}
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell data-table__empty" [attr.colspan]="displayedColumns.length">
+          No records found.
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  @if (paginated) {
+    <mat-paginator
+      [length]="length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  }
+</div>

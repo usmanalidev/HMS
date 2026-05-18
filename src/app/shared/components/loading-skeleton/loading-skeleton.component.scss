@@ -1,0 +1,48 @@
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton__avatar,
+.skeleton__bar {
+  display: block;
+  border-radius: 0.375rem;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--mat-sys-surface-variant) 70%, transparent) 25%,
+    color-mix(in srgb, var(--mat-sys-surface-variant) 40%, transparent) 50%,
+    color-mix(in srgb, var(--mat-sys-surface-variant) 70%, transparent) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton__avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton__bar {
+  height: 0.875rem;
+  flex: 1;
+  min-width: 3rem;
+}

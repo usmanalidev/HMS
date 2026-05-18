@@ -1,0 +1,25 @@
+<!--
+  LEARNING: Pure CSS shimmer animation — no images required.
+  aria-busy + aria-label inform assistive tech that content is loading.
+-->
+<div
+  class="skeleton"
+  role="status"
+  aria-busy="true"
+  aria-label="Loading content"
+>
+  @for (row of rowIndices(); track row) {
+    <div class="skeleton__row">
+      @for (col of columnIndices(); track col) {
+        @if (showAvatar && col === 0) {
+          <span class="skeleton__avatar" aria-hidden="true"></span>
+        }
+        <span
+          class="skeleton__bar"
+          [style.width.%]="70 + ((row + col) % 3) * 10"
+          aria-hidden="true"
+        ></span>
+      }
+    </div>
+  }
+</div>

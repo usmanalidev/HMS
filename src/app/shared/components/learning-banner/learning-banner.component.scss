@@ -1,0 +1,23 @@
+.learning-banner {
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 55%, var(--mat-sys-surface));
+  color: var(--mat-sys-on-surface);
+}
+
+.learning-banner__heading {
+  margin: 0 0 0.5rem;
+  font: var(--mat-sys-title-small);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.learning-banner__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font: var(--mat-sys-body-medium);
+}
+
+.learning-banner__list li + li {
+  margin-top: 0.25rem;
+}
