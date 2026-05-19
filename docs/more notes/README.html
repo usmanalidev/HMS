@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>README</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><h1>Bupa iPAC</h1>
+<p><strong>Insurance Pricing and Administration for Corporate</strong> — enterprise pricing, renewal, claims analysis, and premium posting for Bupa Saudi Arabia corporate health insurance, integrated with Microsoft Dynamics CRM.</p>
+<hr>
+<h2>Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Purpose</strong></td>
+<td>Price corporate group health policies: load CRM opportunities, model claims and loss ratios, calculate premiums, enforce authority-based approvals, and post rates back to CRM</td>
+</tr>
+<tr>
+<td><strong>Users</strong></td>
+<td>Corporate pricing/underwriting staff, iPAC administrators (factor configuration), reports administrators</td>
+</tr>
+<tr>
+<td><strong>Frontend</strong></td>
+<td>Angular 18 SPA embedded in ASP.NET MVC Razor views</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td>.NET Framework 4.7.2, ASP.NET MVC 5</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>SQL Server via Dapper and stored procedures</td>
+</tr>
+<tr>
+<td><strong>CRM</strong></td>
+<td>Dynamics CRM over WCF (net.tcp)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Architecture</h2>
+<pre><code>┌─────────────────┐     encrypted link      ┌──────────────────┐
+│  Dynamics CRM   │ ──────────────────────► │  Bupa.Ipac.Web   │
+└─────────────────┘                         │  (MVC + Angular) │
+        ▲                                   └────────┬─────────┘
+        │ post premium                             │
+        └──────────────────────────────────────────┤
+                                                   ▼
+                                          ┌──────────────────┐
+                                          │ Bupa.iPAC.       │
+                                          │ Services         │
+                                          └────────┬─────────┘
+                     ┌─────────────────────────────┼─────────────────────────────┐
+                     ▼                             ▼                             ▼
+            ┌────────────────┐           ┌────────────────┐           ┌────────────────┐
+            │ Repositories   │           │ CRM.Integration│           │ InRule (premium│
+            │ (Dapper + SPs) │           │ (WCF)          │           │ calculation)   │
+            └───────┬────────┘           └────────────────┘           └────────────────┘
+                    ▼
+         ┌──────────────────────┐
+         │ SQL Server           │
+         │ • IpacConStr (main)  │
+         │ • TRConStr (staging) │
+         └──────────────────────┘
+</code></pre>
+<p><strong>Request flow:</strong> UI component → Angular service → <code>iPacSessionInfo.POST()</code> → MVC controller → service layer → repository → stored procedure → database (and/or CRM).</p>
+<p><strong>Authentication:</strong> IIS Windows Authentication, Active Directory department check, CRM user/role mapping into ASP.NET session (<code>SessionManager.IPUser</code>). The Angular app does not use JWT; it relies on the server session cookie.</p>
+<hr>
+<h2>Solution structure</h2>
+<p>Open <strong><code>Bupa.iPAC.sln</code></strong> in Visual Studio.</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Folder</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Bupa.Ipac.Web</strong></td>
+<td><code>Bupa.Ipac.Web\</code></td>
+<td>MVC host, Angular <code>src/</code>, admin area, API controllers</td>
+</tr>
+<tr>
+<td><strong>Bupa.iPAC.Services</strong></td>
+<td><code>Bupa.iPAC.Services\</code></td>
+<td>Business logic (opportunities, claims, technical results, approvals)</td>
+</tr>
+<tr>
+<td><strong>Bupa.iPAC.Repositories</strong></td>
+<td><code>Bupa.iPAC.Repositories\</code></td>
+<td>Dapper data access, Unit of Work</td>
+</tr>
+<tr>
+<td><strong>Bupa.iPAC.Entities</strong></td>
+<td><code>Bupa.iPAC.Entities\</code></td>
+<td>Domain models and enums</td>
+</tr>
+<tr>
+<td><strong>Bupa.Ipac.Dto</strong></td>
+<td><code>Bupa.Ipac.Dto\</code></td>
+<td>DTOs for admin uploads and CRM wrappers</td>
+</tr>
+<tr>
+<td><strong>Bupa.iPAC.Core</strong></td>
+<td><code>Bupa.iPAC.Core\</code></td>
+<td>Logging, email, shared Dapper helpers</td>
+</tr>
+<tr>
+<td><strong>Bupa.Ipac.CRM.Integration</strong></td>
+<td><code>Bupa.Ipac.CRM.Integration\</code></td>
+<td>WCF client to CRM member management service</td>
+</tr>
+<tr>
+<td><strong>Bupa.Ipac.InRule</strong></td>
+<td><code>Bupa.Ipac.InRule\</code></td>
+<td>Premium calculation engine (C#)</td>
+</tr>
+<tr>
+<td><strong>Bupa.Ipac.WindowsService</strong></td>
+<td><code>Bupa.Ipac.WindowsService\</code></td>
+<td>Background CRM sync and factor-upload reminders (Topshelf)</td>
+</tr>
+<tr>
+<td><strong>Bupa.Ipac.Helpers</strong></td>
+<td><code>Bupa.Ipac.Helpers\</code></td>
+<td>Excel import helpers</td>
+</tr>
+<tr>
+<td><strong>Bupa.iPAC.UnitTest</strong></td>
+<td><code>Bupa.iPAC.UnitTest\</code></td>
+<td>Unit/integration tests</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Prerequisites</h2>
+<ul>
+<li><strong>Visual Studio 2019+</strong> (or compatible) with ASP.NET and web development workload</li>
+<li><strong>.NET Framework 4.7.2</strong></li>
+<li><strong>Node.js</strong> (LTS recommended) and <strong>npm</strong> — for the Angular client</li>
+<li><strong>SQL Server</strong> access to iPAC and technical-result databases</li>
+<li><strong>IIS / IIS Express</strong> with <strong>Windows Authentication</strong> enabled</li>
+<li>Network access to <strong>CRM WCF endpoint</strong>, <strong>IBM API Gateway</strong> (URL decrypt), and other integrations configured in <code>Web.config</code> (environment-specific)</li>
+</ul>
+<hr>
+<h2>Getting started</h2>
+<h3>1. Configure the backend</h3>
+<ol>
+<li>Clone or open the solution.</li>
+<li>Edit <code>Bupa.Ipac.Web\Web.config</code>:<ul>
+<li><strong><code>IpacConStr</code></strong> — main iPAC database</li>
+<li><strong><code>TRConStr</code></strong> — technical result staging database</li>
+<li>CRM, IBM gateway, Elasticsearch, and AD settings under <code>appSettings</code> / <code>system.serviceModel</code></li>
+</ul>
+</li>
+<li>Do not commit real credentials; use local or team-specific config transforms where available.</li>
+</ol>
+<h3>2. Build and run the web application</h3>
+<ol>
+<li>Set <strong>Bupa.Ipac.Web</strong> as the startup project.</li>
+<li>Restore NuGet packages (Visual Studio or <code>nuget restore</code>).</li>
+<li>Build the solution (<strong>F6</strong>).</li>
+<li>Run under IIS Express or IIS (typical dev URL: <code>http://localhost:14314/</code>).</li>
+</ol>
+<p>Users must be on the corporate network with a valid Windows account in an authorized AD department and a mapped CRM role.</p>
+<h3>3. Build the Angular client</h3>
+<pre><code class="language-bash">cd Bupa.Ipac.Web
+npm install
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Environment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run start</code></td>
+<td>Dev server (<code>ng serve</code>) — optional; production uses MVC host</td>
+</tr>
+<tr>
+<td><code>npm run build-dev</code></td>
+<td>Development build → <code>Scripts/ClientApp</code></td>
+</tr>
+<tr>
+<td><code>npm run build-sit</code></td>
+<td>SIT</td>
+</tr>
+<tr>
+<td><code>npm run build-uat</code></td>
+<td>UAT</td>
+</tr>
+<tr>
+<td><code>npm run build-preprod</code></td>
+<td>Pre-production</td>
+</tr>
+<tr>
+<td><code>npm run build-prod</code></td>
+<td>Production</td>
+</tr>
+</tbody></table>
+<p>Angular build output is written to <strong><code>Bupa.Ipac.Web/Scripts/ClientApp</code></strong> (see <code>angular.json</code>).</p>
+<h3>4. Entry point from CRM</h3>
+<p>Users typically open iPAC from CRM via an encrypted link:</p>
+<ul>
+<li>MVC: <code>Home/Index?id={encryptedOpportunityId}</code></li>
+<li>Angular bootstraps via <code>&lt;app-root&gt;</code> in <code>Views/Home/Index.cshtml</code> with <code>OpportunityUniqueNo</code>, <code>ReadOnly</code>, and related attributes.</li>
+</ul>
+<p>Deep links use base href <strong><code>/ngx</code></strong> (e.g. <code>/ngx/opportunity</code>, <code>/ngx/projection</code>).</p>
+<hr>
+<h2>Angular application (<code>Bupa.Ipac.Web/src</code>)</h2>
+<h3>Key routes (<code>app.module.ts</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Feature</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code> or <code>/opportunity</code></td>
+<td>Main pricing workspace</td>
+</tr>
+<tr>
+<td><code>/projection</code></td>
+<td>Claim projection</td>
+</tr>
+<tr>
+<td><code>/targetlr</code></td>
+<td>Target loss ratio</td>
+</tr>
+<tr>
+<td><code>/dashboard</code></td>
+<td>Dashboard summary</td>
+</tr>
+<tr>
+<td><code>/policydesign</code></td>
+<td>Policy / benefit design</td>
+</tr>
+<tr>
+<td><code>/technicalresult</code></td>
+<td>Technical result analytics (lazy-loaded module)</td>
+</tr>
+<tr>
+<td><code>/summaryreport</code></td>
+<td>Summary reports</td>
+</tr>
+<tr>
+<td><code>/mohcalculation</code></td>
+<td>MOH factor impact</td>
+</tr>
+<tr>
+<td><code>/megacasesusers</code></td>
+<td>Mega-cases users</td>
+</tr>
+<tr>
+<td><code>/notes</code>, <code>/audit</code>, <code>/reports</code></td>
+<td>Notes, audit trail, reports</td>
+</tr>
+</tbody></table>
+<h3>Important frontend files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/main.ts</code></td>
+<td>Bootstrap <code>AppModule</code></td>
+</tr>
+<tr>
+<td><code>src/app/app.module.ts</code></td>
+<td>Root module, routes, providers</td>
+</tr>
+<tr>
+<td><code>src/app/app.component.ts</code></td>
+<td>Loads opportunity from CRM URL, sets session user</td>
+</tr>
+<tr>
+<td><code>src/app/shared/ipac.session.info.ts</code></td>
+<td>Client state and all HTTP <code>POST</code> calls</td>
+</tr>
+<tr>
+<td><code>src/app/shared/opportunity.service.ts</code></td>
+<td>Save, post, submit-for-approval orchestration</td>
+</tr>
+<tr>
+<td><code>src/environments/environment*.ts</code></td>
+<td>API base URL per environment</td>
+</tr>
+</tbody></table>
+<p>There is no <code>core/</code> module, no route guards, and no custom HTTP interceptors in the current codebase.</p>
+<h3>Environment URLs</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th><code>BaseUrl</code> (example)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>environment.ts</code></td>
+<td><code>http://localhost:14314/</code></td>
+</tr>
+<tr>
+<td><code>environment.sit.ts</code></td>
+<td><code>https://ipacsit.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.uat.ts</code></td>
+<td><code>https://ipacuat.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.preprod.ts</code></td>
+<td><code>https://ipacpp.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.prod.ts</code></td>
+<td><code>https://ipac.bupa.com.sa/</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Backend API surface</h2>
+<p>The SPA calls <strong>MVC controller actions</strong> with <strong>HTTP POST</strong> and JSON bodies, not a separate Web API layer:</p>
+<pre><code>POST {BaseUrl}{Controller}/{Action}
+</code></pre>
+<p>Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Opportunity/GetAll</code></td>
+<td>Load opportunities and current user</td>
+</tr>
+<tr>
+<td><code>Opportunity/GetIBMDecryptResponse</code></td>
+<td>Decrypt CRM deep-link parameter</td>
+</tr>
+<tr>
+<td><code>Opportunity/SaveOpportunity</code></td>
+<td>Persist pricing state</td>
+</tr>
+<tr>
+<td><code>Opportunity/CalaculatePremium</code></td>
+<td>Calculate premiums</td>
+</tr>
+<tr>
+<td><code>Opportunity/PostPremium</code></td>
+<td>Post rates to CRM</td>
+</tr>
+<tr>
+<td><code>Opportunity/SubmitForApproval</code></td>
+<td>Start approval workflow</td>
+</tr>
+<tr>
+<td><code>Claim/GetClaimExperience</code>, <code>Claim/GetClaimProjection</code></td>
+<td>Claims data</td>
+</tr>
+<tr>
+<td><code>TechnicalResultReport/*</code></td>
+<td>Technical result tabs (TR database)</td>
+</tr>
+</tbody></table>
+<p>Main controllers: <code>OpportunityController</code>, <code>ClaimController</code>, <code>TechnicalResultReportController</code>, <code>SummaryReportController</code>, <code>UnderwritingController</code>, <code>NoteController</code>, <code>AuditController</code>, and others under <code>Bupa.Ipac.Web\Controllers/</code>.</p>
+<p><strong>Admin area:</strong> <code>Bupa.Ipac.Web/Areas/Admin/</code> — factor uploads, renewal configuration, authority matrices (Kendo UI grids). Route prefix: <code>/Admin/{controller}/{action}</code>.</p>
+<hr>
+<h2>Opportunity lifecycle</h2>
+<p>Statuses are defined in <code>Bupa.iPAC.Entities/Custom/EnumType.cs</code> (<code>OpportunityStatus</code>):</p>
+<p><code>New</code> → <code>InProgress</code> → <code>SentToManager</code> / <code>PenddingApproval</code> → <code>Approve</code> / <code>Reject</code> → <code>Posted</code> (and renewal-specific states such as <code>RenewalNew</code>, <code>RenewalSaved</code>).</p>
+<p>Typical flow:</p>
+<ol>
+<li>Open opportunity from CRM  </li>
+<li>Enter or adjust claims experience, projection, target loss ratio, cost-change factors  </li>
+<li>Calculate and save premium  </li>
+<li>Submit for approval if changes exceed user authority  </li>
+<li>Post premium to CRM when approved</li>
+</ol>
+<hr>
+<h2>Windows Service</h2>
+<p><strong><code>Bupa.Ipac.WindowsService</code></strong> runs as a Topshelf service (<code>Bupa.Ipac.WindowsService</code>):</p>
+<ul>
+<li>Sync CRM opportunities and user roles into iPAC  </li>
+<li>Send factor-upload reminder emails</li>
+</ul>
+<p>Deploy and configure separately from the web application.</p>
+<hr>
+<h2>Configuration reference</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Location</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>IpacConStr</code></td>
+<td><code>Web.config</code></td>
+<td>Main database</td>
+</tr>
+<tr>
+<td><code>TRConStr</code></td>
+<td><code>Web.config</code></td>
+<td>Technical result staging database</td>
+</tr>
+<tr>
+<td><code>appSettings</code></td>
+<td><code>Web.config</code></td>
+<td>CRM address, IBM gateway, ELK, roles</td>
+</tr>
+<tr>
+<td><code>system.serviceModel</code></td>
+<td><code>Web.config</code></td>
+<td>WCF CRM client endpoint</td>
+</tr>
+<tr>
+<td><code>environment.*.ts</code></td>
+<td><code>Bupa.Ipac.Web/src/environments/</code></td>
+<td>Angular API base URL</td>
+</tr>
+</tbody></table>
+<p><strong>Dependency injection:</strong> <code>App_Start/AutofacBootstrap.cs</code> registers services and both UnitOfWork instances.</p>
+<p><strong>Startup:</strong> <code>Global.asax.cs</code> — Autofac, routes, bundles, log4net.</p>
+<hr>
+<h2>Debugging tips</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Session timeout / 404 on API</td>
+<td>IIS session, <code>SessionExpireFilter</code>, cookie domain</td>
+</tr>
+<tr>
+<td>Unauthorized</td>
+<td>AD department vs <code>AuthorizedDepartments</code>, CRM user disabled</td>
+</tr>
+<tr>
+<td>Blank opportunity</td>
+<td><code>Opportunity/GetIBMDecryptResponse</code>, IBM gateway config</td>
+</tr>
+<tr>
+<td>Technical result empty</td>
+<td><code>TRConStr</code>, <code>TechnicalResultID</code> on opportunity</td>
+</tr>
+<tr>
+<td>Post to CRM fails</td>
+<td>WCF endpoint, CRM validation messages in logs</td>
+</tr>
+</tbody></table>
+<p><strong>Useful breakpoints:</strong></p>
+<ul>
+<li>Frontend: <code>app.component.ts</code> (startup), <code>opportunity.service.ts</code> (<code>saveOpportunity</code>)  </li>
+<li>Backend: <code>HomeController.GetAuthenticatedUser</code>, <code>OpportunityController.SaveOpportunity</code>, <code>OpportunityService.SaveOpportunity</code></li>
+</ul>
+<hr>
+<h2>Testing</h2>
+<p>Run unit tests from <strong><code>Bupa.iPAC.UnitTest</code></strong> in Visual Studio Test Explorer.</p>
+<hr>
+<h2>Deployment notes</h2>
+<ul>
+<li>Host <strong>Bupa.Ipac.Web</strong> on <strong>IIS</strong> with <strong>Windows Authentication</strong>.  </li>
+<li>Build Angular with the target environment (<code>npm run build-prod</code>, etc.) before publishing.  </li>
+<li>Publish the MVC site including <code>Scripts/ClientApp</code>.  </li>
+<li>Install and start <strong>Bupa.Ipac.WindowsService</strong> on appropriate servers.  </li>
+<li>No Docker or Kubernetes manifests are included in this repository.</li>
+</ul>
+<hr>
+<h2>New developer reading order</h2>
+<ol>
+<li><code>Bupa.iPAC.Entities/Custom/EnumType.cs</code> — statuses and audit types  </li>
+<li><code>Bupa.Ipac.Web/Controllers/HomeController.cs</code> — authentication and entry  </li>
+<li><code>Bupa.Ipac.Web/Views/Home/Index.cshtml</code> — Angular host page  </li>
+<li><code>Bupa.Ipac.Web/src/app/app.component.ts</code> — client bootstrap  </li>
+<li><code>Bupa.Ipac.Web/src/app/shared/ipac.session.info.ts</code> — HTTP and session state  </li>
+<li><code>Bupa.Ipac.Web/src/app/shared/opportunity.service.ts</code> — save/post flows  </li>
+<li><code>Bupa.Ipac.Web/Controllers/OpportunityController.cs</code> — API surface  </li>
+<li><code>Bupa.iPAC.Services/Opportunity/OpportunityService.cs</code> — business rules  </li>
+<li><code>Bupa.Ipac.Web/App_Start/AutofacBootstrap.cs</code> — dependency injection</li>
+</ol>
+<hr>
+<h2>License and ownership</h2>
+<p>Proprietary — Bupa Saudi Arabia. Internal use only unless otherwise specified by your organization.</p>
+<hr>
+<h2>Related documentation</h2>
+<p>For the full architecture walkthrough (modules, CRM flows, database mapping, sequence diagrams, debugging, and interview questions), see <strong><a href="./DEVELOPER_GUIDE.md">DEVELOPER_GUIDE.md</a></strong>.</p>
+</body>
+</html>

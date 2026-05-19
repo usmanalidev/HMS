@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DEPLOYMENT</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><p><a href="./README.md">&lt;- Documentation index</a> | <a href="../README.md">Root README</a></p>
+<h1>Environment and deployment</h1>
+<h3>Angular environments</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th><code>BaseUrl</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>environment.ts</code></td>
+<td><code>http://localhost:14314/</code></td>
+</tr>
+<tr>
+<td><code>environment.sit.ts</code></td>
+<td><code>https://ipacsit.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.uat.ts</code></td>
+<td><code>https://ipacuat.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.preprod.ts</code></td>
+<td><code>https://ipacpp.bupa.com.sa/</code></td>
+</tr>
+<tr>
+<td><code>environment.prod.ts</code></td>
+<td><code>https://ipac.bupa.com.sa/</code></td>
+</tr>
+</tbody></table>
+<p>Build: <code>npm run build-{env}</code> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ output <code>Scripts/ClientApp/</code>.</p>
+<h3>IIS deployment checklist</h3>
+<ol>
+<li>Publish <code>Bupa.Ipac.Web</code> with Windows Authentication enabled  </li>
+<li>Run correct <code>npm run build-*</code> before publish  </li>
+<li>Configure <code>Web.config</code> connection strings and CRM/WCF endpoints for target environment  </li>
+<li>Install Windows Service on app server(s)  </li>
+<li>Verify AD department authorization and CRM connectivity</li>
+</ol>
+<h3>CI/CD</h3>
+<p>No Docker, Kubernetes, or pipeline files are present in this repository (solution references TFS).</p>
+<hr>
+</body>
+</html>

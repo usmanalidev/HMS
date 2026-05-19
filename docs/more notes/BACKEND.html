@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACKEND</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><h1>BACKEND</h1>
+<p><a href="./README.md">â† Documentation index</a> Â· <a href="../README.md">Root README</a></p>
+<h1>Backend architecture</h1>
+<h3>Request processing</h3>
+<div class="mermaid-rendered" data-mermaid-id="mermaid-b4q4y463"><svg id="mermaid-b4q4y463" width="100%" xmlns="http://www.w3.org/2000/svg" class="flowchart" style="max-width: 1371.916748046875px;" viewBox="0.00000762939453125 0 1371.916748046875 284.6624450683594" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-b4q4y463{font-family:inherit;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#mermaid-b4q4y463 .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#mermaid-b4q4y463 .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#mermaid-b4q4y463 .error-icon{fill:#552222;}#mermaid-b4q4y463 .error-text{fill:#552222;stroke:#552222;}#mermaid-b4q4y463 .edge-thickness-normal{stroke-width:1px;}#mermaid-b4q4y463 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-b4q4y463 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-b4q4y463 .edge-thickness-invisible{stroke-width:0;fill:none;}#mermaid-b4q4y463 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-b4q4y463 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-b4q4y463 .marker{fill:#333333;stroke:#333333;}#mermaid-b4q4y463 .marker.cross{stroke:#333333;}#mermaid-b4q4y463 svg{font-family:inherit;font-size:16px;}#mermaid-b4q4y463 p{margin:0;}#mermaid-b4q4y463 .label{font-family:inherit;color:#333;}#mermaid-b4q4y463 .cluster-label text{fill:#333;}#mermaid-b4q4y463 .cluster-label span{color:#333;}#mermaid-b4q4y463 .cluster-label span p{background-color:transparent;}#mermaid-b4q4y463 .label text,#mermaid-b4q4y463 span{fill:#333;color:#333;}#mermaid-b4q4y463 .node rect,#mermaid-b4q4y463 .node circle,#mermaid-b4q4y463 .node ellipse,#mermaid-b4q4y463 .node polygon,#mermaid-b4q4y463 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid-b4q4y463 .rough-node .label text,#mermaid-b4q4y463 .node .label text,#mermaid-b4q4y463 .image-shape .label,#mermaid-b4q4y463 .icon-shape .label{text-anchor:middle;}#mermaid-b4q4y463 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-b4q4y463 .rough-node .label,#mermaid-b4q4y463 .node .label,#mermaid-b4q4y463 .image-shape .label,#mermaid-b4q4y463 .icon-shape .label{text-align:center;}#mermaid-b4q4y463 .node.clickable{cursor:pointer;}#mermaid-b4q4y463 .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#mermaid-b4q4y463 .arrowheadPath{fill:#333333;}#mermaid-b4q4y463 .edgePath .path{stroke:#333333;stroke-width:1px;}#mermaid-b4q4y463 .flowchart-link{stroke:#333333;fill:none;}#mermaid-b4q4y463 .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-b4q4y463 .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#mermaid-b4q4y463 .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-b4q4y463 .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#mermaid-b4q4y463 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid-b4q4y463 .cluster text{fill:#333;}#mermaid-b4q4y463 .cluster span{color:#333;}#mermaid-b4q4y463 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:inherit;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-b4q4y463 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#mermaid-b4q4y463 rect.text{fill:none;stroke-width:0;}#mermaid-b4q4y463 .icon-shape,#mermaid-b4q4y463 .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-b4q4y463 .icon-shape p,#mermaid-b4q4y463 .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#mermaid-b4q4y463 .icon-shape .label rect,#mermaid-b4q4y463 .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-b4q4y463 .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#mermaid-b4q4y463 .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#mermaid-b4q4y463 .node .neo-node{stroke:#9370DB;}#mermaid-b4q4y463 [data-look="neo"].node rect,#mermaid-b4q4y463 [data-look="neo"].cluster rect,#mermaid-b4q4y463 [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-b4q4y463 [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#mermaid-b4q4y463 [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-b4q4y463 [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#mermaid-b4q4y463 [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-b4q4y463 [data-look="neo"].node circle .state-start{fill:#000000;}#mermaid-b4q4y463 [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-b4q4y463 [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-b4q4y463 :root{--mermaid-font-family:inherit;}</style><g><marker id="mermaid-b4q4y463_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="mermaid-b4q4y463_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-b4q4y463_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-b4q4y463_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-b4q4y463_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-b4q4y463_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="mermaid-b4q4y463_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M177.365,175.655L181.531,175.655C185.698,175.655,194.031,175.655,201.698,175.655C209.365,175.655,216.365,175.655,219.865,175.655L223.365,175.655" id="mermaid-b4q4y463-L_A_B_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_A_B_0" data-points="W3sieCI6MTc3LjM2NDU3ODI0NzA3MDMsInkiOjE3NS42NTQ2MzI1NjgzNTkzOH0seyJ4IjoyMDIuMzY0NTc4MjQ3MDcwMywieSI6MTc1LjY1NDYzMjU2ODM1OTM4fSx7IngiOjIyNy4zNjQ1NzgyNDcwNzAzLCJ5IjoxNzUuNjU0NjMyNTY4MzU5Mzh9XQ==" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M321.126,148.655L330.337,140.82C339.549,132.985,357.972,117.316,371.854,109.481C385.736,101.647,395.076,101.647,399.747,101.647L404.417,101.647" id="mermaid-b4q4y463-L_B_C_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_C_0" data-points="W3sieCI6MzIxLjEyNTc5NTk4NDMyMzUzLCJ5IjoxNDguNjU0NjMyNTY4MzU5Mzh9LHsieCI6Mzc2LjM5NTgyODI0NzA3MDMsInkiOjEwMS42NDY4MjAwNjgzNTkzOH0seyJ4Ijo0MDguNDE2NjY0MTIzNTM1MTYsInkiOjEwMS42NDY4MjAwNjgzNTkzOH1d" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M526.879,125.216L538.319,130.899C549.76,136.582,572.64,147.948,589.756,153.631C606.872,159.314,618.222,159.314,623.898,159.314L629.573,159.314" id="mermaid-b4q4y463-L_C_D_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_D_0" data-points="W3sieCI6NTI2Ljg3ODgzNTg0Mjc0MjUsInkiOjEyNS4yMTU4OTgzNDkxNTIwM30seyJ4Ijo1OTUuNTIwODMzOTY5MTE2MiwieSI6MTU5LjMxMzgxOTg4NTI1Mzl9LHsieCI6NjMzLjU3MjkxNzkzODIzMjQsInkiOjE1OS4zMTM4MTk4ODUyNTM5fV0=" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M526.879,78.078L538.319,72.395C549.76,66.712,572.64,55.346,590.891,49.663C609.142,43.98,622.764,43.98,629.575,43.98L636.385,43.98" id="mermaid-b4q4y463-L_C_E_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_C_E_0" data-points="W3sieCI6NTI2Ljg3ODgzNTg0Mjc0MjUsInkiOjc4LjA3Nzc0MTc4NzU2NjcyfSx7IngiOjU5NS41MjA4MzM5NjkxMTYyLCJ5Ijo0My45Nzk4MjAyNTE0NjQ4NDR9LHsieCI6NjQwLjM4NTQxNzkzODIzMjQsInkiOjQzLjk3OTgyMDI1MTQ2NDg0NH1d" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M321.126,202.655L330.337,210.489C339.549,218.324,357.972,233.993,370.684,241.828C383.396,249.662,390.396,249.662,393.896,249.662L397.396,249.662" id="mermaid-b4q4y463-L_B_F_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_B_F_0" data-points="W3sieCI6MzIxLjEyNTc5NTk4NDMyMzUzLCJ5IjoyMDIuNjU0NjMyNTY4MzU5Mzh9LHsieCI6Mzc2LjM5NTgyODI0NzA3MDMsInkiOjI0OS42NjI0NDUwNjgzNTkzOH0seyJ4Ijo0MDEuMzk1ODI4MjQ3MDcwMywieSI6MjQ5LjY2MjQ0NTA2ODM1OTM4fV0=" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M787.219,43.98L792.521,43.98C797.823,43.98,808.427,43.98,817.229,43.98C826.031,43.98,833.031,43.98,836.531,43.98L840.031,43.98" id="mermaid-b4q4y463-L_E_G_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_E_G_0" data-points="W3sieCI6Nzg3LjIxODc0NjE4NTMwMjcsInkiOjQzLjk3OTgyMDI1MTQ2NDg0NH0seyJ4Ijo4MTkuMDMxMjQ2MTg1MzAyNywieSI6NDMuOTc5ODIwMjUxNDY0ODQ0fSx7IngiOjg0NC4wMzEyNDYxODUzMDI3LCJ5Ijo0My45Nzk4MjAyNTE0NjQ4NDR9XQ==" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M980.51,43.98L984.677,43.98C988.844,43.98,997.177,43.98,1004.844,43.98C1012.51,43.98,1019.51,43.98,1023.01,43.98L1026.51,43.98" id="mermaid-b4q4y463-L_G_H_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_G_H_0" data-points="W3sieCI6OTgwLjUxMDQxNzkzODIzMjQsInkiOjQzLjk3OTgyMDI1MTQ2NDg0NH0seyJ4IjoxMDA1LjUxMDQxNzkzODIzMjQsInkiOjQzLjk3OTgyMDI1MTQ2NDg0NH0seyJ4IjoxMDMwLjUxMDQxNzkzODIzMjQsInkiOjQzLjk3OTgyMDI1MTQ2NDg0NH1d" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M1215.917,43.98L1220.083,43.98C1224.25,43.98,1232.583,43.98,1240.25,43.98C1247.917,43.98,1254.917,43.98,1258.417,43.98L1261.917,43.98" id="mermaid-b4q4y463-L_H_I_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_H_I_0" data-points="W3sieCI6MTIxNS45MTY2Njc5MzgyMzI0LCJ5Ijo0My45Nzk4MjAyNTE0NjQ4NDR9LHsieCI6MTI0MC45MTY2Njc5MzgyMzI0LCJ5Ijo0My45Nzk4MjAyNTE0NjQ4NDR9LHsieCI6MTI2NS45MTY2Njc5MzgyMzI0LCJ5Ijo0My45Nzk4MjAyNTE0NjQ4NDR9XQ==" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path><path d="M794.031,159.314L798.198,159.314C802.365,159.314,810.698,159.314,819.227,159.314C827.757,159.314,836.483,159.314,840.845,159.314L845.208,159.314" id="mermaid-b4q4y463-L_D_J_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_D_J_0" data-points="W3sieCI6Nzk0LjAzMTI0NjE4NTMwMjcsInkiOjE1OS4zMTM4MTk4ODUyNTM5fSx7IngiOjgxOS4wMzEyNDYxODUzMDI3LCJ5IjoxNTkuMzEzODE5ODg1MjUzOX0seyJ4Ijo4NDkuMjA4MzMyMDYxNzY3NiwieSI6MTU5LjMxMzgxOTg4NTI1Mzl9XQ==" data-look="classic" marker-end="url(#mermaid-b4q4y463_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(595.5208339691162, 159.3138198852539)"><g class="label" data-id="L_C_D_0" transform="translate(-13.052083969116211, -12)"><foreignObject width="26.104167938232422" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>Yes</p></span></div></foreignObject></g></g><g class="edgeLabel" transform="translate(595.5208339691162, 43.979820251464844)"><g class="label" data-id="L_C_E_0" transform="translate(-10.229166984558105, -12)"><foreignObject width="20.45833396911621" height="24"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"><p>No</p></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_F_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_E_G_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_G_H_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_H_I_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_J_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="mermaid-b4q4y463-flowchart-A-0" data-look="classic" transform="translate(92.68228912353516, 175.65463256835938)"><rect class="basic label-container" style="" x="-84.68229293823242" y="-27" width="169.36458587646484" height="54"></rect><g class="label" style="" transform="translate(-54.68229293823242, -12)"><rect></rect><foreignObject width="109.36458587646484" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>MVC Controller</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-B-1" data-look="classic" transform="translate(289.3802032470703, 175.65463256835938)"><rect class="basic label-container" style="" x="-62.015625" y="-27" width="124.03125" height="54"></rect><g class="label" style="" transform="translate(-32.015625, -12)"><rect></rect><foreignObject width="64.03125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>I*Service</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-C-3" data-look="classic" transform="translate(479.43228912353516, 101.64682006835938)"><polygon points="71.015625,0 142.03125,-71.015625 71.015625,-142.03125 0,-71.015625" class="label-container" transform="translate(-70.515625, 71.015625)"></polygon><g class="label" style="" transform="translate(-44.015625, -12)"><rect></rect><foreignObject width="88.03125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Need CRM?</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-D-5" data-look="classic" transform="translate(713.8020820617676, 159.3138198852539)"><rect class="basic label-container" style="" x="-80.22916793823242" y="-27" width="160.45833587646484" height="54"></rect><g class="label" style="" transform="translate(-50.22916793823242, -12)"><rect></rect><foreignObject width="100.45833587646484" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Retrieve WCF</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-E-7" data-look="classic" transform="translate(713.8020820617676, 43.979820251464844)"><rect class="basic label-container" style="" x="-73.41666793823242" y="-27" width="146.83333587646484" height="54"></rect><g class="label" style="" transform="translate(-43.41666793823242, -12)"><rect></rect><foreignObject width="86.83333587646484" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>IUnitOfWork</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-F-9" data-look="classic" transform="translate(479.43228912353516, 249.66244506835938)"><rect class="basic label-container" style="" x="-78.03646087646484" y="-27" width="156.0729217529297" height="54"></rect><g class="label" style="" transform="translate(-48.036460876464844, -12)"><rect></rect><foreignObject width="96.07292175292969" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>InRuleEngine</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-G-11" data-look="classic" transform="translate(912.2708320617676, 43.979820251464844)"><rect class="basic label-container" style="" x="-68.23958587646484" y="-27" width="136.4791717529297" height="54"></rect><g class="label" style="" transform="translate(-38.239585876464844, -12)"><rect></rect><foreignObject width="76.47917175292969" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Repository</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-H-13" data-look="classic" transform="translate(1123.2135429382324, 43.979820251464844)"><rect class="basic label-container" style="" x="-92.703125" y="-27" width="185.40625" height="54"></rect><g class="label" style="" transform="translate(-62.703125, -12)"><rect></rect><foreignObject width="125.40625" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Stored Procedure</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-I-15" data-look="classic" transform="translate(1314.9166679382324, 43.979820251464844)"><path d="M0,10.986547085201794 a49,10.986547085201794 0,0,0 98,0 a49,10.986547085201794 0,0,0 -98,0 l0,49.98654708520179 a49,10.986547085201794 0,0,0 98,0 l0,-49.98654708520179" class="basic label-container outer-path" style="" transform="translate(-49, -35.97982062780269)"></path><g class="label" style="" transform="translate(-41.5, -2)"><rect></rect><foreignObject width="83" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>SQL Server</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-b4q4y463-flowchart-J-17" data-look="classic" transform="translate(912.2708320617676, 159.3138198852539)"><path d="M0,12.555998008959682 a63.0625,12.555998008959682 0,0,0 126.125,0 a63.0625,12.555998008959682 0,0,0 -126.125,0 l0,51.55599800895968 a63.0625,12.555998008959682 0,0,0 126.125,0 l0,-51.55599800895968" class="basic label-container outer-path" style="" transform="translate(-63.0625, -38.33399701343952)"></path><g class="label" style="" transform="translate(-55.5625, -2)"><rect></rect><foreignObject width="111.125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>Dynamics CRM</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="mermaid-b4q4y463-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="mermaid-b4q4y463-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+<h3>Dependency injection (<code>AutofacBootstrap.cs</code>)</h3>
+<pre><code class="language-csharp">builder.RegisterType&lt;UnitOfWork&gt;()
+    .As&lt;IUnitOfWork&gt;().WithParameter(&quot;connectionString&quot;, &quot;IpacConStr&quot;);
+
+builder.RegisterType&lt;TUoW.UnitOfWork&gt;()
+    .As&lt;ITUoW.IUnitOfWork&gt;().WithParameter(&quot;connectionString&quot;, &quot;TRConStr&quot;);
+
+builder.RegisterType&lt;OpportunityService&gt;().As&lt;IOpportunityService&gt;();
+// ... ClaimService, TechnicalResultReportService, etc.
+</code></pre>
+<h3>Service layer responsibilities</h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>OpportunityService</code></td>
+<td>Save, calculate, approve, post premium, emails, actuarial, authority</td>
+</tr>
+<tr>
+<td><code>ClaimService</code></td>
+<td>Claim experience/projection persistence</td>
+</tr>
+<tr>
+<td><code>TechnicalResultReportService</code></td>
+<td>TR database reports</td>
+</tr>
+<tr>
+<td><code>SummaryReportService</code></td>
+<td>Membership/premium summaries</td>
+</tr>
+<tr>
+<td><code>UnderwritingService</code></td>
+<td>Underwriting notes/data</td>
+</tr>
+<tr>
+<td><code>PricingAdequacyService</code></td>
+<td>Pricing adequacy rules</td>
+</tr>
+<tr>
+<td><code>DelegateExGratiaService</code></td>
+<td>Delegate ex-gratia</td>
+</tr>
+<tr>
+<td><code>MOHFactorService</code></td>
+<td>MOH calculations</td>
+</tr>
+<tr>
+<td><code>MegaCasesUsersService</code></td>
+<td>Mega-cases logic</td>
+</tr>
+<tr>
+<td><code>AuditService</code></td>
+<td>Audit trail queries</td>
+</tr>
+<tr>
+<td><code>IBMAPIService</code></td>
+<td>Encrypt/decrypt CRM URLs</td>
+</tr>
+<tr>
+<td><code>AuthorityPostRequestService</code></td>
+<td>Authority post workflow</td>
+</tr>
+<tr>
+<td><code>CentralConfigrationService</code></td>
+<td>Feature flags by key/date</td>
+</tr>
+</tbody></table>
+<h3>Repository pattern</h3>
+<ul>
+<li>Base: <code>DPGenericRepository&lt;T&gt;</code>, <code>DPTransactionRepository&lt;T&gt;</code> from <code>Bupa.Data.Dapper</code></li>
+<li><code>UnitOfWork</code> exposes 50+ repository properties (see <code>IUnitOfWork.cs</code>)</li>
+<li>Typical method: <code>_connection.Query&lt;T&gt;(&quot;sp_Name&quot;, params, commandType: StoredProcedure)</code></li>
+</ul>
+<h3>Exception handling</h3>
+<p><code>HandleExceptionAttribute</code> (in <code>SessionExpireFilterAttribute.cs</code> file) logs to log4net and returns JSON error with correlation id for AJAX requests.</p>
+<h3>Validation</h3>
+<ul>
+<li>Controller/model binding for incoming DTOs</li>
+<li>Service-layer business rules (authority, status transitions)</li>
+<li>CRM-side validation on <code>PostPremiumGroup</code> (messages bubble back to UI)</li>
+</ul>
+<hr>
+<h2>Premium calculation (InRule)</h2>
+<p><strong>Project:</strong> <code>Bupa.Ipac.InRule</code><br><strong>Class:</strong> <code>InRuleEngine</code> (e.g. <code>CalculuatePremium</code>)</p>
+<p>Despite the name, this is <strong>in-process C# calculation logic</strong>, not an external InRule rules server at runtime.</p>
+<p><strong>Invocation path:</strong></p>
+<ol>
+<li>UI â†’ <code>Opportunity/CalaculatePremium</code></li>
+<li><code>OpportunityService</code> loads factors from DB (cost curves, deductibles, credibility, etc.)</li>
+<li><code>InRuleEngine</code> applies formulas</li>
+<li>Results returned as JSON â†’ session updated â†’ premium summary UI</li>
+</ol>
+<p>Admin-maintained factors (uploaded via Admin area) directly affect calculation output.</p>
+<hr>
+<h2>Windows Service and background jobs</h2>
+<p><strong>Project:</strong> <code>Bupa.Ipac.WindowsService</code><br><strong>Host:</strong> Topshelf (<code>ConfigureService.cs</code>)<br><strong>Service name:</strong> <code>Bupa.Ipac.WindowsService</code></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CRMService</code></td>
+<td>Sync opportunities, sub-accounts, user roles from CRM to iPAC DB</td>
+</tr>
+<tr>
+<td><code>FactorUploadService</code></td>
+<td><code>SendremainderAlertsForFactorsUpload</code> via <code>sp_GetFactorUploadReminders</code></td>
+</tr>
+</tbody></table>
+<p>Runs as <strong>Local System</strong> by default â€” adjust for production security policy.</p>
+<hr>
+<h2>Admin area</h2>
+<p><strong>Route prefix:</strong> <code>/Admin/{controller}/{action}</code><br><strong>Authorization:</strong> <code>[AuthorizeiPACAdmin]</code> on most controllers<br><strong>UI:</strong> Kendo UI grids, Excel upload patterns</p>
+<h3>Controller categories</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Factor CRUD + upload</strong></td>
+<td><code>CostCurveController</code>, <code>DeductibleController</code>, <code>NationalityFactorController</code>, <code>SeasonalityFactorController</code></td>
+</tr>
+<tr>
+<td><strong>Renewal config</strong></td>
+<td><code>RenewalScoringController</code>, <code>RenewalAuthorityMatrixConfigController</code>, <code>RenewalDiscountController</code></td>
+</tr>
+<tr>
+<td><strong>Mega-cases</strong></td>
+<td><code>MegaCasesCostCurveController</code>, <code>MegaCasesCredibilityController</code></td>
+</tr>
+<tr>
+<td><strong>Reference data</strong></td>
+<td><code>RoomController</code>, <code>NationalityController</code>, <code>NetworkController</code></td>
+</tr>
+<tr>
+<td><strong>Operational</strong></td>
+<td><code>BatchController</code>, <code>FactorUploadController</code>, <code>UserDelegationController</code>, <code>ReportsController</code></td>
+</tr>
+</tbody></table>
+<p>Typical pattern per factor controller:</p>
+<ul>
+<li><code>Index</code> â€” grid view  </li>
+<li><code>Batches_Read</code> â€” Kendo data source  </li>
+<li><code>Upload</code> GET/POST â€” Excel import via <code>Bupa.Ipac.Helpers.ExcelHelper</code>  </li>
+<li><code>Details</code> â€” batch detail view</li>
+</ul>
+<hr>
+</body>
+</html>

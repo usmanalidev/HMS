@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ANGULAR</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><p><a href="./README.md">&lt;- Documentation index</a> | <a href="../README.md">Root README</a></p>
+<h1>Angular frontend architecture</h1>
+<h3>NgModules</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>File</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>AppModule</strong></td>
+<td><code>app.module.ts</code></td>
+<td>Root ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â declares almost all components</td>
+</tr>
+<tr>
+<td><strong>SharedModule</strong></td>
+<td><code>shared/shared.module.ts</code></td>
+<td>Delegate ex-gratia, pricing adequacy, scoring/LR calc</td>
+</tr>
+<tr>
+<td><strong>TechnicalResultModule</strong></td>
+<td><code>technicalresult/technical.result.module.ts</code></td>
+<td><strong>Only lazy-loaded feature module</strong></td>
+</tr>
+<tr>
+<td>AppRoutingModule</td>
+<td><code>app-routing.module.ts</code></td>
+<td><strong>Unused</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â routes are in <code>AppModule</code></td>
+</tr>
+<tr>
+<td>ReportsModule, IndexModule, TargetLRModule</td>
+<td>Various</td>
+<td>Empty or commented ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â not wired</td>
+</tr>
+</tbody></table>
+<h3>Routing (<code>app.module.ts</code>)</h3>
+<pre><code class="language-typescript">const appRoutes: Routes = [
+  { path: &#39;&#39;, component: OpportunityComponent },
+  { path: &#39;dashboard&#39;, component: DashBoardComponent },
+  { path: &#39;projection&#39;, component: ClaimProjectionComponent },
+  { path: &#39;opportunity&#39;, component: OpportunityComponent },
+  { path: &#39;policydesign&#39;, component: PolicyDesignComponent },
+  { path: &#39;targetlr&#39;, component: TargetLossRatioComponent },
+  { path: &#39;reports&#39;, component: ReportsComponent },
+  { path: &#39;notes&#39;, component: NotesComponent },
+  { path: &#39;audit&#39;, component: AuditComponent },
+  {
+    path: &#39;technicalresult&#39;,
+    loadChildren: () =&gt; import(&#39;./technicalresult/technical.result.module&#39;)
+      .then(m =&gt; m.TechnicalResultModule),
+    runGuardsAndResolvers: &#39;always&#39;
+  },
+  // ... summaryreport, mohcalculation, megacasesusers, frequentUsersHistory
+];
+</code></pre>
+<p><strong>Note:</strong> <code>TechnicalResultModule</code> is both <strong>imported</strong> in <code>AppModule</code> and <strong>lazy-loaded</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â be aware of duplicate registration.</p>
+<h3>State management</h3>
+<p>There is <strong>no NgRx</strong>. Client state is centralized in:</p>
+<p><strong><code>shared/ipac.session.info.ts</code></strong> (<code>iPacSessionInfo</code>)</p>
+<ul>
+<li>Holds: <code>Opportunity</code>, <code>IPUser</code>, authority levels, premium rates, feature flags (MOH, delegate post, pricing adequacy)</li>
+<li>Exposes <code>BehaviorSubject</code> streams: <code>currentOpportunity</code>, <code>displaySpinner</code>, <code>getCostChangeConfig()</code>, etc.</li>
+<li><strong>All HTTP</strong> via <code>POST(url, data)</code> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ <code>environment.BaseUrl + url</code></li>
+</ul>
+<p><strong>Feature services</strong> hold tab-specific dirty flags and cached data:</p>
+<ul>
+<li><code>ClaimDataService</code> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â claim experience/projection</li>
+<li><code>TargetLRDataService</code> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â target loss ratio changes</li>
+<li><code>OpportunityService</code> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â aggregates child services for save/post/submit</li>
+</ul>
+<h3>HTTP pattern</h3>
+<pre><code class="language-typescript">// Typical call
+this.session.POST(&quot;Opportunity/SaveOpportunity&quot;, payload)
+
+// Lazy-loaded tabs (no global spinner)
+this.session.POSTLazy(&quot;TechnicalResultReport/GetHospital&quot;, params)
+</code></pre>
+<h3>Smart vs presentational components</h3>
+<p>The codebase predominantly uses <strong>smart components</strong> (inject services directly). Shared presentation is limited to <code>SharedModule</code> exports and common pipes.</p>
+<h3>Forms and validation</h3>
+<ul>
+<li><strong>Template-driven</strong> forms (<code>FormsModule</code>)</li>
+<li>Validation often in services: <code>OpportunityService.validateClaimExprince()</code>, etc.</li>
+<li>User feedback via <strong>SweetAlert2</strong> and <strong>ngx-toastr</strong></li>
+</ul>
+<h3>Technical result ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â named outlet routing</h3>
+<p>Parent route: <code>technicalresult/technicalresult</code><br>Child tabs use <code>outlet: &#39;tab&#39;</code>:</p>
+<pre><code>/ngx/technicalresult/technicalresult(membermovement:tab)
+</code></pre>
+<p>Tabs: <code>membermovement</code>, <code>claimssummary</code>, <code>statistics</code>, <code>monthlydistribution</code>, <code>financialposition</code>, <code>lossprofile</code>, <code>gqlclaim</code>, <code>hospital</code>, <code>nationality</code>, <code>frequentusers</code>, <code>underwriting</code>, <code>preauthorization</code>, <code>combinedlrsummary</code>, <code>planbyprovider</code>.</p>
+<hr>
+<h2>7. Module-by-module breakdown</h2>
+<h3>Module dependency map</h3>
+<div class="mermaid-rendered" data-mermaid-id="mermaid-ktalg59u"><svg id="mermaid-ktalg59u" width="100%" xmlns="http://www.w3.org/2000/svg" class="flowchart" style="max-width: 895.53125px;" viewBox="-35 0 895.53125 302" role="graphics-document document" aria-roledescription="flowchart-v2"><style>#mermaid-ktalg59u{font-family:inherit;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#mermaid-ktalg59u .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#mermaid-ktalg59u .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#mermaid-ktalg59u .error-icon{fill:#552222;}#mermaid-ktalg59u .error-text{fill:#552222;stroke:#552222;}#mermaid-ktalg59u .edge-thickness-normal{stroke-width:1px;}#mermaid-ktalg59u .edge-thickness-thick{stroke-width:3.5px;}#mermaid-ktalg59u .edge-pattern-solid{stroke-dasharray:0;}#mermaid-ktalg59u .edge-thickness-invisible{stroke-width:0;fill:none;}#mermaid-ktalg59u .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-ktalg59u .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-ktalg59u .marker{fill:#333333;stroke:#333333;}#mermaid-ktalg59u .marker.cross{stroke:#333333;}#mermaid-ktalg59u svg{font-family:inherit;font-size:16px;}#mermaid-ktalg59u p{margin:0;}#mermaid-ktalg59u .label{font-family:inherit;color:#333;}#mermaid-ktalg59u .cluster-label text{fill:#333;}#mermaid-ktalg59u .cluster-label span{color:#333;}#mermaid-ktalg59u .cluster-label span p{background-color:transparent;}#mermaid-ktalg59u .label text,#mermaid-ktalg59u span{fill:#333;color:#333;}#mermaid-ktalg59u .node rect,#mermaid-ktalg59u .node circle,#mermaid-ktalg59u .node ellipse,#mermaid-ktalg59u .node polygon,#mermaid-ktalg59u .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid-ktalg59u .rough-node .label text,#mermaid-ktalg59u .node .label text,#mermaid-ktalg59u .image-shape .label,#mermaid-ktalg59u .icon-shape .label{text-anchor:middle;}#mermaid-ktalg59u .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-ktalg59u .rough-node .label,#mermaid-ktalg59u .node .label,#mermaid-ktalg59u .image-shape .label,#mermaid-ktalg59u .icon-shape .label{text-align:center;}#mermaid-ktalg59u .node.clickable{cursor:pointer;}#mermaid-ktalg59u .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#mermaid-ktalg59u .arrowheadPath{fill:#333333;}#mermaid-ktalg59u .edgePath .path{stroke:#333333;stroke-width:1px;}#mermaid-ktalg59u .flowchart-link{stroke:#333333;fill:none;}#mermaid-ktalg59u .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-ktalg59u .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#mermaid-ktalg59u .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-ktalg59u .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#mermaid-ktalg59u .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid-ktalg59u .cluster text{fill:#333;}#mermaid-ktalg59u .cluster span{color:#333;}#mermaid-ktalg59u div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:inherit;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-ktalg59u .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#mermaid-ktalg59u rect.text{fill:none;stroke-width:0;}#mermaid-ktalg59u .icon-shape,#mermaid-ktalg59u .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-ktalg59u .icon-shape p,#mermaid-ktalg59u .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#mermaid-ktalg59u .icon-shape .label rect,#mermaid-ktalg59u .image-shape .label rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-ktalg59u .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#mermaid-ktalg59u .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#mermaid-ktalg59u .node .neo-node{stroke:#9370DB;}#mermaid-ktalg59u [data-look="neo"].node rect,#mermaid-ktalg59u [data-look="neo"].cluster rect,#mermaid-ktalg59u [data-look="neo"].node polygon{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-ktalg59u [data-look="neo"].node path{stroke:#9370DB;stroke-width:1px;}#mermaid-ktalg59u [data-look="neo"].node .outer-path{filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-ktalg59u [data-look="neo"].node .neo-line path{stroke:#9370DB;filter:none;}#mermaid-ktalg59u [data-look="neo"].node circle{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-ktalg59u [data-look="neo"].node circle .state-start{fill:#000000;}#mermaid-ktalg59u [data-look="neo"].icon-shape .icon{fill:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-ktalg59u [data-look="neo"].icon-shape .icon-neo path{stroke:#9370DB;filter:drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}#mermaid-ktalg59u :root{--mermaid-font-family:inherit;}</style><g><marker id="mermaid-ktalg59u_flowchart-v2-pointEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-pointStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="4.5" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-pointEnd-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="11.5" refY="7" markerUnits="userSpaceOnUse" markerWidth="10.5" markerHeight="14" orient="auto"><path d="M 0 0 L 11.5 7 L 0 14 z" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-pointStart-margin" class="marker flowchart-v2" viewBox="0 0 11.5 14" refX="1" refY="7" markerUnits="userSpaceOnUse" markerWidth="11.5" markerHeight="14" orient="auto"><polygon points="0,7 11.5,14 11.5,0" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker id="mermaid-ktalg59u_flowchart-v2-circleEnd" class="marker flowchart-v2" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-ktalg59u_flowchart-v2-circleStart" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-ktalg59u_flowchart-v2-circleEnd-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refY="5" refX="12.25" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-ktalg59u_flowchart-v2-circleStart-margin" class="marker flowchart-v2" viewBox="0 0 10 10" refX="-2" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker id="mermaid-ktalg59u_flowchart-v2-crossEnd" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-crossStart" class="marker cross flowchart-v2" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-crossEnd-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="17.7" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5;"></path></marker><marker id="mermaid-ktalg59u_flowchart-v2-crossStart-margin" class="marker cross flowchart-v2" viewBox="0 0 15 15" refX="-3.5" refY="7.5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto"><path d="M 1,1 L 14,14 M 1,14 L 14,1" class="arrowMarkerPath" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path d="M222.526,46.452L180.938,53.21C139.351,59.968,56.175,73.484,14.588,90.909C-27,108.333,-27,129.667,-27,151C-27,172.333,-27,193.667,22.605,211.057C72.211,228.448,171.422,241.895,221.027,248.619L270.633,255.343" id="mermaid-ktalg59u-L_App_Shared_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_App_Shared_0" data-points="W3sieCI6MjIyLjUyNjAzOTEyMzUzNTE2LCJ5Ijo0Ni40NTIwMTg2NDI0MjU1MzZ9LHsieCI6LTI3LCJ5Ijo4N30seyJ4IjotMjcsInkiOjE1MX0seyJ4IjotMjcsInkiOjIxNX0seyJ4IjoyNzQuNTk2MzUxNjIzNTM1MTYsInkiOjI1NS44ODAyNjMwMzY0Nzc5N31d" data-look="classic" marker-end="url(#mermaid-ktalg59u_flowchart-v2-pointEnd)"></path><path d="M363.474,43.193L426.273,50.495C489.071,57.796,614.668,72.398,677.467,85.199C740.266,98,740.266,109,740.266,114.5L740.266,120" id="mermaid-ktalg59u-L_App_TR_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_App_TR_0" data-points="W3sieCI6MzYzLjQ3Mzk2MDg3NjQ2NDg0LCJ5Ijo0My4xOTM0NDQyNTQ5MTI2Nn0seyJ4Ijo3NDAuMjY1NjI1LCJ5Ijo4N30seyJ4Ijo3NDAuMjY1NjI1LCJ5IjoxMjR9XQ==" data-look="classic" marker-end="url(#mermaid-ktalg59u_flowchart-v2-pointEnd)"></path><path d="M740.266,178L740.266,184.167C740.266,190.333,740.266,202.667,690.66,215.557C641.055,228.448,541.844,241.895,492.238,248.619L442.633,255.343" id="mermaid-ktalg59u-L_TR_Shared_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_TR_Shared_0" data-points="W3sieCI6NzQwLjI2NTYyNSwieSI6MTc4fSx7IngiOjc0MC4yNjU2MjUsInkiOjIxNX0seyJ4Ijo0MzguNjY5MjczMzc2NDY0ODQsInkiOjI1NS44ODAyNjMwMzY0Nzc5N31d" data-look="classic" marker-end="url(#mermaid-ktalg59u_flowchart-v2-pointEnd)"></path><path d="M222.526,58.643L208.438,63.369C194.351,68.095,166.175,77.548,152.088,85.774C138,94,138,101,138,104.5L138,108" id="mermaid-ktalg59u-L_App_Opp_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_App_Opp_0" data-points="W3sieCI6MjIyLjUyNjAzOTEyMzUzNTE2LCJ5Ijo1OC42NDI4NzcxOTcyNjU2MjZ9LHsieCI6MTM4LCJ5Ijo4N30seyJ4IjoxMzgsInkiOjExMn1d" data-look="classic" marker-end="url(#mermaid-ktalg59u_flowchart-v2-pointEnd)"></path><path d="M363.474,58.643L377.562,63.369C391.649,68.095,419.825,77.548,433.912,85.774C448,94,448,101,448,104.5L448,108" id="mermaid-ktalg59u-L_App_Sat_0" class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" style=";" data-edge="true" data-et="edge" data-id="L_App_Sat_0" data-points="W3sieCI6MzYzLjQ3Mzk2MDg3NjQ2NDg0LCJ5Ijo1OC42NDI4NzcxOTcyNjU2MjZ9LHsieCI6NDQ4LCJ5Ijo4N30seyJ4Ijo0NDgsInkiOjExMn1d" data-look="classic" marker-end="url(#mermaid-ktalg59u_flowchart-v2-pointEnd)"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_App_Shared_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_App_TR_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_TR_Shared_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_App_Opp_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g><g class="edgeLabel"><g class="label" data-id="L_App_Sat_0" transform="translate(0, 0)"><foreignObject width="0" height="0"><div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="edgeLabel"></span></div></foreignObject></g></g></g><g class="nodes"><g class="node default" id="mermaid-ktalg59u-flowchart-App-0" data-look="classic" transform="translate(293, 35)"><rect class="basic label-container" style="" x="-70.47396087646484" y="-27" width="140.9479217529297" height="54"></rect><g class="label" style="" transform="translate(-40.473960876464844, -12)"><rect></rect><foreignObject width="80.94792175292969" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>AppModule</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-ktalg59u-flowchart-Shared-1" data-look="classic" transform="translate(356.6328125, 267)"><rect class="basic label-container" style="" x="-82.03646087646484" y="-27" width="164.0729217529297" height="54"></rect><g class="label" style="" transform="translate(-52.036460876464844, -12)"><rect></rect><foreignObject width="104.07292175292969" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>SharedModule</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-ktalg59u-flowchart-TR-2" data-look="classic" transform="translate(740.265625, 151)"><rect class="basic label-container" style="" x="-112.265625" y="-27" width="224.53125" height="54"></rect><g class="label" style="" transform="translate(-82.265625, -12)"><rect></rect><foreignObject width="164.53125" height="24"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;"><span class="nodeLabel"><p>TechnicalResultModule</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-ktalg59u-flowchart-Opp-10" data-look="classic" transform="translate(138, 151)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Opportunity + Claim + TargetLR</p></span></div></foreignObject></g></g><g class="node default" id="mermaid-ktalg59u-flowchart-Sat-12" data-look="classic" transform="translate(448, 151)"><rect class="basic label-container" style="" x="-130" y="-39" width="260" height="78"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignObject width="200" height="48"><div xmlns="http://www.w3.org/1999/xhtml" style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;"><span class="nodeLabel"><p>Dashboard Notes Audit Reports MOH MegaCases</p></span></div></foreignObject></g></g></g></g></g><defs><filter id="mermaid-ktalg59u-drop-shadow" height="130%" width="130%"><feDropShadow dx="4" dy="4" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs><defs><filter id="mermaid-ktalg59u-drop-shadow-small" height="150%" width="150%"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-opacity="0.06" flood-color="#000000"></feDropShadow></filter></defs></svg></div>
+<h3>Opportunity (core workspace)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Routes</strong></td>
+<td><code>/</code>, <code>/opportunity</code></td>
+</tr>
+<tr>
+<td><strong>Components</strong></td>
+<td><code>OpportunityComponent</code>, <code>MemberDistComponent</code>, <code>PremiumsummaryComponent</code>, <code>CrmDashboardComponent</code></td>
+</tr>
+<tr>
+<td><strong>Services</strong></td>
+<td><code>OpportunityService</code>, <code>iPacSessionInfo</code>, <code>DashboardDataService</code></td>
+</tr>
+<tr>
+<td><strong>APIs</strong></td>
+<td><code>Opportunity/*</code> (see Ãƒâ€šÃ‚Â§8)</td>
+</tr>
+<tr>
+<td><strong>Entities</strong></td>
+<td><code>Opportunity</code>, <code>Member</code>, <code>Product</code>, <code>OpportunityRates</code>, <code>OpportunityConfigration</code></td>
+</tr>
+<tr>
+<td><strong>Flow</strong></td>
+<td>Load from CRM ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ edit pricing inputs ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ save ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ approve ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ post</td>
+</tr>
+</tbody></table>
+<h3>Claim projection</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Route</strong></td>
+<td><code>/projection</code></td>
+</tr>
+<tr>
+<td><strong>Components</strong></td>
+<td><code>ClaimProjectionComponent</code>, <code>ClaimExperienceComponent</code>, <code>ClaimAdjComponent</code>, <code>CostChangeComponent</code></td>
+</tr>
+<tr>
+<td><strong>Services</strong></td>
+<td><code>ClaimProjectionService</code>, <code>ClaimDataService</code>, <code>ClaimCalculationService</code></td>
+</tr>
+<tr>
+<td><strong>APIs</strong></td>
+<td><code>Claim/GetClaimExperience</code>, <code>GetClaimProjection</code>, <code>Create</code>, <code>Upload</code></td>
+</tr>
+<tr>
+<td><strong>Flow</strong></td>
+<td>Enter historical claims ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ project future periods ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ feed premium calculation</td>
+</tr>
+</tbody></table>
+<h3>Target loss ratio</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Route</strong></td>
+<td><code>/targetlr</code></td>
+</tr>
+<tr>
+<td><strong>Components</strong></td>
+<td><code>TargetLossRatioComponent</code>, <code>SchemeRateComponent</code>, <code>SchemeSummaryComponent</code>, <code>RateSummaryComponent</code></td>
+</tr>
+<tr>
+<td><strong>Services</strong></td>
+<td><code>TargetLRDataService</code>, <code>TargetLRCalculationService</code></td>
+</tr>
+<tr>
+<td><strong>APIs</strong></td>
+<td><code>TargetLoss/GetCurrentLossRatio</code>, opportunity save/calculate</td>
+</tr>
+<tr>
+<td><strong>Flow</strong></td>
+<td>Define desired LR by scheme ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ drives premium recalculation</td>
+</tr>
+</tbody></table>
+<h3>Technical result (lazy)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Route</strong></td>
+<td><code>/technicalresult/...</code></td>
+</tr>
+<tr>
+<td><strong>Service</strong></td>
+<td><code>TechnicalResultReportService</code></td>
+</tr>
+<tr>
+<td><strong>APIs</strong></td>
+<td><code>TechnicalResultReport/*</code></td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td><strong>TRConStr</strong> (staging) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â separate from main iPAC DB</td>
+</tr>
+<tr>
+<td><strong>Flow</strong></td>
+<td>Renewal analytics for underwriters ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â hospital, GQL, member movement, renewal factors</td>
+</tr>
+</tbody></table>
+<h3>Dashboard, notes, audit, reports</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Route</th>
+<th>Controller</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Dashboard</td>
+<td><code>/dashboard</code></td>
+<td><code>Opportunity/GetDashboardSummary</code></td>
+</tr>
+<tr>
+<td>Notes</td>
+<td><code>/notes</code></td>
+<td><code>Note/*</code></td>
+</tr>
+<tr>
+<td>Audit</td>
+<td><code>/audit</code></td>
+<td><code>Audit/GetAuditHistory</code></td>
+</tr>
+<tr>
+<td>Reports</td>
+<td><code>/reports</code></td>
+<td>Redirects to Admin reports for authorized users</td>
+</tr>
+</tbody></table>
+<h3>Policy design</h3>
+<p>| Route | <code>/policydesign</code> |<br>| Service | <code>PolicyService</code> |<br>| Purpose | View benefit/plan structure for the opportunity |</p>
+<h3>Summary report</h3>
+<p>| Route | <code>/summaryreport</code> |<br>| Service | <code>SummaryReportService</code> |<br>| APIs | <code>SummaryReport/*</code> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â membership and premium breakdowns |</p>
+<h3>MOH calculation</h3>
+<p>| Route | <code>/mohcalculation</code> |<br>| Controller | <code>MOHFactorsController</code> |<br>| Purpose | Ministry of Health factor impact on member distribution and pricing |</p>
+<h3>Mega-cases &amp; frequent users</h3>
+<p>| Route | <code>/megacasesusers</code>, <code>/frequentUsersHistory</code> |<br>| Controllers | <code>MegaCasesController</code>, <code>FrequentUserController</code> |<br>| Purpose | Large-group rules and high-utilization member analysis |</p>
+<h3>SharedModule widgets</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Business use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DelegateExgratiaComponent</code></td>
+<td>Delegate ex-gratia pricing adjustments</td>
+</tr>
+<tr>
+<td><code>PricingAdequacyComponent</code></td>
+<td>Pricing adequacy validation</td>
+</tr>
+<tr>
+<td><code>ScoringAndLrcalcComponent</code></td>
+<td>Renewal scoring and LR calculation display</td>
+</tr>
+</tbody></table>
+<hr>
+</body>
+</html>
