@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>API</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><h1>API</h1>
+<p><a href="./README.md">â† Documentation index</a> Â· <a href="../README.md">Root README</a></p>
+<h1>HTTP API reference</h1>
+<h3>Calling convention</h3>
+<pre><code>POST {environment.BaseUrl}{Controller}/{Action}
+Content-Type: application/json
+Credentials: include (Windows auth session cookie)
+</code></pre>
+<p>There are <strong>no Web API <code>ApiController</code> classes</strong> Ã¢â‚¬â€ all endpoints are MVC actions returning <code>JsonResult</code> or <code>ActionResult</code>.</p>
+<h3>OpportunityController (primary)</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Purpose</th>
+<th>Angular consumer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GetAll</code></td>
+<td>Load opportunities + <code>IPUser</code></td>
+<td><code>app.component</code>, <code>iPacSessionInfo</code></td>
+</tr>
+<tr>
+<td><code>GetIBMDecryptResponse</code></td>
+<td>Decrypt CRM URL token</td>
+<td><code>app.component</code></td>
+</tr>
+<tr>
+<td><code>CreateOpportunityOption</code></td>
+<td>Create pricing option</td>
+<td>Session</td>
+</tr>
+<tr>
+<td><code>SaveOpportunity</code></td>
+<td>Persist full pricing state</td>
+<td><code>OpportunityService</code></td>
+</tr>
+<tr>
+<td><code>CalaculatePremium</code></td>
+<td>Run premium engine</td>
+<td>Opportunity flow</td>
+</tr>
+<tr>
+<td><code>PostPremium</code></td>
+<td>Post rates to CRM</td>
+<td>Post buttons</td>
+</tr>
+<tr>
+<td><code>PostPremiumDiscount</code></td>
+<td>Post with discount</td>
+<td>Renewal flows</td>
+</tr>
+<tr>
+<td><code>SubmitForApproval</code></td>
+<td>Start approval workflow</td>
+<td>Authority exceed</td>
+</tr>
+<tr>
+<td><code>GetPremiumSummary</code></td>
+<td>Premium breakdown</td>
+<td><code>PremiumsummaryComponent</code></td>
+</tr>
+<tr>
+<td><code>GetDashboardSummary</code></td>
+<td>Dashboard metrics</td>
+<td><code>DashBoardComponent</code></td>
+</tr>
+<tr>
+<td><code>GetMembersDistribution</code></td>
+<td>Member counts</td>
+<td><code>MemberDistComponent</code></td>
+</tr>
+<tr>
+<td><code>GetNetworkAuthorityMatrix</code></td>
+<td>Discount limits</td>
+<td>Target LR / posting</td>
+</tr>
+<tr>
+<td><code>GetPricingAdequacy</code></td>
+<td>Adequacy data</td>
+<td><code>PricingAdequacyComponent</code></td>
+</tr>
+<tr>
+<td><code>GetDelegateExgratia</code></td>
+<td>Delegate ex-gratia</td>
+<td><code>DelegateExgratiaComponent</code></td>
+</tr>
+<tr>
+<td><code>GetGrossPremiumAuthorityMartix</code></td>
+<td>GWP authority</td>
+<td>GWP validation dialog</td>
+</tr>
+<tr>
+<td><code>GetCreditControlBalance</code></td>
+<td>Renewal credit balance</td>
+<td><code>OpportunityComponent</code></td>
+</tr>
+<tr>
+<td><code>GetConfigurationValueByKeyCode</code></td>
+<td>Feature flags</td>
+<td><code>app.component</code></td>
+</tr>
+<tr>
+<td><code>CalculateActuarialPremium</code></td>
+<td>Actuarial calc</td>
+<td>Actuarial flow</td>
+</tr>
+<tr>
+<td><code>RequestAuthorityPost</code></td>
+<td>Delegate post request</td>
+<td>Authority workflow</td>
+</tr>
+<tr>
+<td><code>SendEmail*</code></td>
+<td>Notification emails</td>
+<td>Various post/approval actions</td>
+</tr>
+</tbody></table>
+<h3>ClaimController</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GetClaimExperience</code></td>
+<td>Historical claim summary</td>
+</tr>
+<tr>
+<td><code>GetClaimProjection</code></td>
+<td>Projected claims</td>
+</tr>
+<tr>
+<td><code>GetClaimData</code></td>
+<td>Combined claim payload</td>
+</tr>
+<tr>
+<td><code>Create</code></td>
+<td>Save claim data</td>
+</tr>
+<tr>
+<td><code>Upload</code></td>
+<td>Excel upload</td>
+</tr>
+<tr>
+<td><code>GetCostChangeConfig</code></td>
+<td>Cost change factors</td>
+</tr>
+<tr>
+<td><code>GetInsurer</code>, <code>GetReasons</code></td>
+<td>Lookup data</td>
+</tr>
+</tbody></table>
+<h3>TechnicalResultReportController</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GetTechnicalResult</code></td>
+<td>Header / metadata</td>
+</tr>
+<tr>
+<td><code>GetRenewalFactors</code>, <code>SaveRenewalFactors</code></td>
+<td>Renewal configuration</td>
+</tr>
+<tr>
+<td><code>GetMemberMovement</code></td>
+<td>Member movement report</td>
+</tr>
+<tr>
+<td><code>GetClaimsSummary</code></td>
+<td>Claims summary</td>
+</tr>
+<tr>
+<td><code>GetFinancialPosition</code></td>
+<td>Financial position</td>
+</tr>
+<tr>
+<td><code>GetHospital</code>, <code>GetHospitalHistoric</code></td>
+<td>Hospital utilization</td>
+</tr>
+<tr>
+<td><code>GetLossProfile</code></td>
+<td>Loss profile</td>
+</tr>
+<tr>
+<td><code>GetMonthlyDistribution*</code></td>
+<td>Monthly distribution (group/year variants)</td>
+</tr>
+<tr>
+<td><code>GetNationalityClaim</code></td>
+<td>Nationality breakdown</td>
+</tr>
+<tr>
+<td><code>GetStatistics</code></td>
+<td>Statistics</td>
+</tr>
+<tr>
+<td><code>GetFrequentUser</code>, <code>GetFrequentUserPrevious</code></td>
+<td>Frequent users</td>
+</tr>
+<tr>
+<td><code>GetPreAuthorisation*</code></td>
+<td>Pre-authorization</td>
+</tr>
+<tr>
+<td><code>GetGQLClaim</code>, <code>GetGroupGQLClaim</code></td>
+<td>GQL claims</td>
+</tr>
+<tr>
+<td><code>GetPlanRate</code>, <code>GetPlanByProvider*</code></td>
+<td>Plan rates</td>
+</tr>
+<tr>
+<td><code>GetRenewalAuthorityMatrix*</code></td>
+<td>Renewal authority</td>
+</tr>
+<tr>
+<td><code>GetRenewalScoringAndLRCalc</code></td>
+<td>Scoring and LR</td>
+</tr>
+<tr>
+<td><code>GetCombinedLRSummary</code></td>
+<td>Combined LR summary</td>
+</tr>
+<tr>
+<td><code>GetCentralConfigration</code></td>
+<td>Config keys</td>
+</tr>
+</tbody></table>
+<h3>Other controllers</h3>
+<table>
+<thead>
+<tr>
+<th>Controller</th>
+<th>Key actions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>TargetLossController</code></td>
+<td><code>GetCurrentLossRatio</code></td>
+</tr>
+<tr>
+<td><code>UnderwritingController</code></td>
+<td><code>GetUnderwriting</code>, <code>SaveUnderwriting</code>, <code>SwitchTechnicalResult</code></td>
+</tr>
+<tr>
+<td><code>NoteController</code></td>
+<td><code>GetNotes</code>, <code>SaveNote</code>, <code>EditNote</code></td>
+</tr>
+<tr>
+<td><code>AuditController</code></td>
+<td><code>GetAuditHistory</code></td>
+</tr>
+<tr>
+<td><code>SummaryReportController</code></td>
+<td>Membership/premium summary reports</td>
+</tr>
+<tr>
+<td><code>MegaCasesController</code></td>
+<td>Mega-cases users, credibility, book rate</td>
+</tr>
+<tr>
+<td><code>MOHFactorsController</code></td>
+<td>MOH impact factors</td>
+</tr>
+<tr>
+<td><code>ScenarioController</code></td>
+<td><code>GetScenarios</code>, <code>SaveScenario</code></td>
+</tr>
+<tr>
+<td><code>FrequentUserController</code></td>
+<td>Frequent user save/load</td>
+</tr>
+<tr>
+<td><code>CRMController</code></td>
+<td><code>PostCRMOpportunityStatus</code> (anonymous callback)</td>
+</tr>
+<tr>
+<td><code>RPAController</code></td>
+<td><code>RUD</code> GET Ã¢â‚¬â€ robotic automation</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Appendix B: OpportunityController action list</h2>
+<p>Full surface for grep/reference:</p>
+<p><code>CreateOpportunityOption</code>, <code>GetAll</code>, <code>GetIBMDecryptResponse</code>, <code>LogUserAccessViolation</code>, <code>Summary</code>, <code>UpdateNationality</code>, <code>GetMembersDistribution</code>, <code>GetInitialMembersDistributionRenewal</code>, <code>GetPremiumSummary</code>, <code>GetDashboardSummary</code>, <code>GetSchemeSummary</code>, <code>CalaculatePremium</code>, <code>SaveOpportunity</code>, <code>GetNetworkAuthorityMatrix</code>, <code>GetPricingAdequacy</code>, <code>GetDelegateExgratia</code>, <code>PostPremium</code>, <code>PostPremiumDiscount</code>, <code>SubmitForApproval</code>, <code>PostData</code>, <code>GetLastPostedPremiumRates</code>, <code>GetOpportunityPremiumRates</code>, <code>GetGrossPremiumAuthorityMartix</code>, <code>GetGWPApprover</code>, <code>SendEmail</code>, <code>SendEmailForDelegatePost</code>, <code>SendEmailAfterDelegatePost</code>, <code>SendEmailForDelegatePostRejection</code>, <code>DownloadFile</code>, <code>GetGWPAttachments</code>, <code>GetNextYearGrossRateRenewal</code>, <code>CalculateActuarialPremium</code>, <code>CalculateActuarialBookRate</code>, <code>GetDelegateUsers</code>, <code>GetCreditControlBalance</code>, <code>SendEmailNotificationForCreditBalance</code>, <code>GetShortfallByProvider</code>, <code>GetShortfallByProviderHistoric</code>, <code>UpdateDelegateRole</code>, <code>RequestAuthorityPost</code>, <code>SendEmailOnAuthorityPost</code>, <code>SendEmailOnUserDelegationUpgrade</code>, <code>SendEmailOnAuthorityPostRejection</code>, <code>CheckIfOpportunityIsUnderAuthorityPost</code>, <code>GetConfigurationValueByKeyCode</code></p>
+<hr>
+</body>
+</html>

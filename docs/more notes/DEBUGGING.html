@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DEBUGGING</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><p><a href="./README.md">&lt;- Documentation index</a> | <a href="../README.md">Root README</a></p>
+<h1>Debugging guide</h1>
+<h3>Tools</h3>
+<ul>
+<li><strong>Visual Studio</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â backend breakpoints, attach to IIS Express  </li>
+<li><strong>Browser DevTools</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Network tab for <code>POST .../Opportunity/...</code>  </li>
+<li><strong>SQL Profiler / SSMS</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â trace stored procedure calls  </li>
+<li><strong>log4net</strong> logs ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â application errors  </li>
+<li><strong>Elasticsearch</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â CRM integration logs (if configured)</li>
+</ul>
+<h3>Breakpoint cheat sheet</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Frontend</th>
+<th>Backend</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>App won&#39;t load</td>
+<td><code>app.component.ts</code> ~line 50</td>
+<td><code>HomeController.Index</code>, <code>GetAuthenticatedUser</code></td>
+</tr>
+<tr>
+<td>Save fails</td>
+<td><code>opportunity.service.ts</code> <code>saveOpportunity</code></td>
+<td><code>OpportunityController.SaveOpportunity</code>, <code>OpportunityService.SaveOpportunity</code></td>
+</tr>
+<tr>
+<td>Premium wrong</td>
+<td>Before save payload</td>
+<td><code>CalaculatePremium</code>, <code>InRuleEngine</code></td>
+</tr>
+<tr>
+<td>Post CRM fails</td>
+<td>Post handler</td>
+<td><code>PostPremiumNew</code> / <code>PostPremiumRenewal</code>, <code>PostPremiumGroup</code></td>
+</tr>
+<tr>
+<td>Session lost</td>
+<td><code>ipac.session.info.ts</code> <code>POST</code> catch</td>
+<td><code>SessionExpireFilterAttribute</code></td>
+</tr>
+<tr>
+<td>TR tab empty</td>
+<td><code>technical.result.service.ts</code></td>
+<td><code>TechnicalResultReportController</code>, TR connection</td>
+</tr>
+</tbody></table>
+<h3>Inspect HTTP payload</h3>
+<p>Save request aggregates (from Angular):</p>
+<ul>
+<li><code>ClaimExprince</code>, <code>ClaimProjection</code>, <code>claimData</code></li>
+<li><code>targetLR</code>, <code>costChange</code></li>
+<li><code>delegateExgratia</code>, <code>pricingAdequacy</code></li>
+<li><code>premiumRatesWithoutCommission</code></li>
+<li><code>authorityLevel</code>, <code>StatusReason</code></li>
+</ul>
+<p>Match parameter names to <code>OpportunityController.SaveOpportunity</code> signature.</p>
+<h3>Log correlation</h3>
+<p><code>HandleExceptionAttribute</code> returns JSON <code>{ Id, Method, Message }</code> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â search log4net for that Id.</p>
+<hr>
+<h2>18. Common issues</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix direction</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Redirect to UnAuthorized</td>
+<td>AD department not in <code>AuthorizedDepartments</code></td>
+<td>DB config + AD attributes</td>
+</tr>
+<tr>
+<td>Session Timeout alert</td>
+<td>Session expired or 404 on API</td>
+<td>Re-open from CRM; check IIS session timeout</td>
+</tr>
+<tr>
+<td>Invalid Request page</td>
+<td>IBM decrypt failed</td>
+<td>CRM link, IBM gateway config</td>
+</tr>
+<tr>
+<td>No opportunities returned</td>
+<td>CRM WCF / wrong decrypted id</td>
+<td>Trace <code>GetAll</code>, CRM connectivity</td>
+</tr>
+<tr>
+<td>Premium $0 or wrong</td>
+<td>Missing factors in Admin</td>
+<td>Upload cost curves, check InRule inputs</td>
+</tr>
+<tr>
+<td>Post premium CRM error</td>
+<td>CRM validation</td>
+<td>Read exception message; complete required CRM fields</td>
+</tr>
+<tr>
+<td>Technical result blank</td>
+<td><code>TRConStr</code> or missing <code>TechnicalResultID</code></td>
+<td>DB + opportunity linkage</td>
+</tr>
+<tr>
+<td>Changes to routes ignored</td>
+<td>Edited <code>app-routing.module.ts</code></td>
+<td>Edit <code>app.module.ts</code> instead</td>
+</tr>
+<tr>
+<td>CORS error on <code>ng serve</code></td>
+<td>Dev-only</td>
+<td>Use MVC host or ensure <code>Web.config</code> CORS for localhost:4200</td>
+</tr>
+</tbody></table>
+<h3>Known code quirks</h3>
+<ol>
+<li><code>app-routing.module.ts</code> is unused  </li>
+<li><code>TechnicalResultModule</code> imported eagerly and lazy-loaded  </li>
+<li><code>debugger</code> statement in <code>POSTLazy</code> (<code>ipac.session.info.ts</code>) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â remove before production  </li>
+<li><code>GetActiveOpportunity()</code> uses <code>ListOpportunity[0]</code> in one branch ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â verify when multiple opportunities exist  </li>
+<li>Mixed controller namespaces: <code>Bupa.Ipac.Web.Controllers</code> vs <code>ipac.web.integration.Controllers</code>  </li>
+<li>Legacy <code>common/base.service.ts</code> hardcodes localhost URL ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â prefer <code>iPacSessionInfo</code></li>
+</ol>
+<hr>
+</body>
+</html>

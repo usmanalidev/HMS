@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ONBOARDING</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #111; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+  pre { background: #f3f4f6; padding: 0.8em 1em; border-radius: 6px; overflow-x: auto; }
+  code { background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #e5e7eb; margin: 0.5em 0; padding: 0.2em 1em; color: #4b5563; }
+  table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+  th, td { border: 1px solid #d1d5db; padding: 0.45em 0.7em; text-align: left; }
+  th { background: #f9fafb; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 1em 0; }
+  .mermaid-rendered { margin: 1em 0; text-align: center; }
+  .mermaid-rendered svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body><h1>ONBOARDING</h1>
+<p><a href="./README.md">â† Documentation index</a> Â· <a href="../README.md">Root README</a></p>
+<h1>Hands-on learning paths</h1>
+<h3>Recommended learning order</h3>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Focus</th>
+<th>Files to master</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Vocabulary + entry</td>
+<td><code>EnumType.cs</code>, <code>HomeController.cs</code>, <code>Index.cshtml</code>, <code>app.component.ts</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Session + HTTP</td>
+<td><code>ipac.session.info.ts</code>, <code>environment.ts</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Core pricing</td>
+<td><code>opportunity.component.ts</code>, <code>claim.data.service.ts</code>, <code>opportunity.service.ts</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Backend save</td>
+<td><code>OpportunityController.cs</code>, <code>OpportunityService.cs</code>, <code>OpportunityRepository.cs</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>CRM + post</td>
+<td><code>Retrieve.cs</code>, <code>PostPremiumNew</code>, <code>PostPremiumRenewal</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Technical result</td>
+<td><code>technical.result.module.ts</code>, <code>TechnicalResultReportController.cs</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Admin factors</td>
+<td>Any <code>Areas/Admin</code> factor controller + Excel upload</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Background</td>
+<td><code>Bupa.Ipac.WindowsService</code>, <code>CRMService.cs</code></td>
+</tr>
+</tbody></table>
+<h3>Exercise 1: Trace a save (2 hours)</h3>
+<ol>
+<li>Set breakpoint in <code>OpportunityService.saveOpportunity</code> (Angular)  </li>
+<li>Click Save in UI  </li>
+<li>Follow POST in Network tab  </li>
+<li>Break in <code>OpportunityController.SaveOpportunity</code>  </li>
+<li>Step through <code>OpportunityService.SaveOpportunity</code> (.NET)  </li>
+<li>Identify 3 stored procedures called</li>
+</ol>
+<h3>Exercise 2: Trace authentication (1 hour)</h3>
+<ol>
+<li>Break on <code>GetAuthenticatedUser</code>  </li>
+<li>Inspect AD department string  </li>
+<li>Step into <code>SetPrincipalCRM</code>  </li>
+<li>Inspect <code>SessionManager.IPUser</code> in watch window</li>
+</ol>
+<h3>Exercise 3: Add a read-only API call (half day)</h3>
+<ol>
+<li>Add method to appropriate <code>I*Service</code> + implementation  </li>
+<li>Add repository method calling existing SP or new SP  </li>
+<li>Add controller action with <code>[Authorize]</code> + <code>[SessionExpireFilter]</code>  </li>
+<li>Add <code>session.POST</code> wrapper and call from component</li>
+</ol>
+<hr>
+<h2>20. Interview-style questions</h2>
+<ol>
+<li>How does a user authenticate to iPAC without a login page?  </li>
+<li>Why does iPAC use two SQL connection strings?  </li>
+<li>Explain the difference between <code>SaveOpportunity</code> and <code>PostPremium</code>.  </li>
+<li>What happens when <code>SessionExpireFilter</code> runs on an AJAX request?  </li>
+<li>How are CRM roles mapped to iPAC permissions?  </li>
+<li>What is the purpose of the IBM API in the startup flow?  </li>
+<li>Describe the Technical Result moduleÃ¢â‚¬â„¢s router outlet pattern.  </li>
+<li>Where is premium calculation performed Ã¢â‚¬â€ client or server?  </li>
+<li>What does the Windows Service sync from CRM?  </li>
+<li>How would you add a new tab to the Technical Result module?  </li>
+<li>What is delegate post vs normal post premium?  </li>
+<li>Name three stored procedures used when saving an opportunity.  </li>
+<li>Why is Angular built into <code>Scripts/ClientApp</code> instead of hosted separately?  </li>
+<li>What audit types exist and when is <code>DelegatePost</code> used?  </li>
+<li>How does <code>OpportunityService.getData()</code> support a single save payload?</li>
+</ol>
+<hr>
+<h2>21. Refactoring opportunities</h2>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Area</th>
+<th>Suggestion</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>High</td>
+<td>Module structure</td>
+<td>Split <code>AppModule</code> into lazy feature modules; add <code>CoreModule</code></td>
+</tr>
+<tr>
+<td>High</td>
+<td>State</td>
+<td>Reduce <code>iPacSessionInfo</code> size; consider NgRx or Angular signals</td>
+</tr>
+<tr>
+<td>High</td>
+<td>API</td>
+<td>Migrate to ASP.NET Core Web API + OpenAPI; consistent REST routes</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Auth</td>
+<td>Add HTTP interceptor for <code>_Logon_</code> / session handling</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Routing</td>
+<td>Remove unused <code>app-routing.module.ts</code>; fix duplicate TR module import</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>DevOps</td>
+<td>Add CI pipeline; remove <code>packages/</code> from source control</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Data</td>
+<td>Document stored procedures in repo; versioned SQL migrations</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Naming</td>
+<td>Fix typos (<code>CalaculatePremium</code>, <code>UnderwritingDataSservice</code>)</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Security</td>
+<td>Review <code>[AllowAnonymous]</code> CRM callback and RPA endpoint</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Tests</td>
+<td>Expand unit test coverage beyond CRM integration</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Appendix A: Key file index</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>One-line purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Bupa.iPAC.sln</code></td>
+<td>Solution entry</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/Global.asax.cs</code></td>
+<td>Application startup</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/App_Start/AutofacBootstrap.cs</code></td>
+<td>DI registration</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/App_Start/RouteConfig.cs</code></td>
+<td>MVC + ngx routes</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/Web.config</code></td>
+<td>Connection strings, WCF, app settings</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/Controllers/HomeController.cs</code></td>
+<td>Auth + Angular host</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/Controllers/OpportunityController.cs</code></td>
+<td>Main API surface</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/Views/Home/Index.cshtml</code></td>
+<td><code>&lt;app-root&gt;</code> shell</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/src/main.ts</code></td>
+<td>Angular bootstrap</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/src/app/app.module.ts</code></td>
+<td>Root module + routes</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/src/app/app.component.ts</code></td>
+<td>Load opportunity on startup</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/src/app/shared/ipac.session.info.ts</code></td>
+<td>Client state + HTTP</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.Web/src/app/shared/opportunity.service.ts</code></td>
+<td>Save/post orchestration</td>
+</tr>
+<tr>
+<td><code>Bupa.iPAC.Services/Opportunity/OpportunityService.cs</code></td>
+<td>Core business logic</td>
+</tr>
+<tr>
+<td><code>Bupa.iPAC.Repositories/UnitOfWork/IUnitOfWork.cs</code></td>
+<td>Repository catalog</td>
+</tr>
+<tr>
+<td><code>Bupa.iPAC.Entities/Custom/EnumType.cs</code></td>
+<td>Status enums</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.CRM.Integration/Retrieve.cs</code></td>
+<td>CRM WCF facade</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.InRule/InRuleEngine.cs</code></td>
+<td>Premium calculation</td>
+</tr>
+<tr>
+<td><code>Bupa.Ipac.WindowsService/IPACSchedulerService.cs</code></td>
+<td>Background scheduler</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Appendix B: OpportunityController action list</h2>
+<p>Full surface for grep/reference:</p>
+<p><code>CreateOpportunityOption</code>, <code>GetAll</code>, <code>GetIBMDecryptResponse</code>, <code>LogUserAccessViolation</code>, <code>Summary</code>, <code>UpdateNationality</code>, <code>GetMembersDistribution</code>, <code>GetInitialMembersDistributionRenewal</code>, <code>GetPremiumSummary</code>, <code>GetDashboardSummary</code>, <code>GetSchemeSummary</code>, <code>CalaculatePremium</code>, <code>SaveOpportunity</code>, <code>GetNetworkAuthorityMatrix</code>, <code>GetPricingAdequacy</code>, <code>GetDelegateExgratia</code>, <code>PostPremium</code>, <code>PostPremiumDiscount</code>, <code>SubmitForApproval</code>, <code>PostData</code>, <code>GetLastPostedPremiumRates</code>, <code>GetOpportunityPremiumRates</code>, <code>GetGrossPremiumAuthorityMartix</code>, <code>GetGWPApprover</code>, <code>SendEmail</code>, <code>SendEmailForDelegatePost</code>, <code>SendEmailAfterDelegatePost</code>, <code>SendEmailForDelegatePostRejection</code>, <code>DownloadFile</code>, <code>GetGWPAttachments</code>, <code>GetNextYearGrossRateRenewal</code>, <code>CalculateActuarialPremium</code>, <code>CalculateActuarialBookRate</code>, <code>GetDelegateUsers</code>, <code>GetCreditControlBalance</code>, <code>SendEmailNotificationForCreditBalance</code>, <code>GetShortfallByProvider</code>, <code>GetShortfallByProviderHistoric</code>, <code>UpdateDelegateRole</code>, <code>RequestAuthorityPost</code>, <code>SendEmailOnAuthorityPost</code>, <code>SendEmailOnUserDelegationUpgrade</code>, <code>SendEmailOnAuthorityPostRejection</code>, <code>CheckIfOpportunityIsUnderAuthorityPost</code>, <code>GetConfigurationValueByKeyCode</code></p>
+<hr>
+</body>
+</html>
